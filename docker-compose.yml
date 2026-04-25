@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    # Using PostGIS image natively for robust spatial data operations
+    image: postgis/postgis:15-3.3
+    environment:
+      - POSTGRES_USER=urban_admin
+      - POSTGRES_PASSWORD=urban_secret
+      - POSTGRES_DB=urbanhelper_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    # Run migrations and start the Django development server
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=urbanhelper_db
+      - DB_USER=urban_admin
+      - DB_PASS=urban_secret
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    # Essential for hot-reloading in Windows/Mac Docker environments
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+volumes:
+  # Persistent volume for database data
+  postgres_data:

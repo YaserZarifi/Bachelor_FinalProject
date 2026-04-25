@@ -1,0 +1,12 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+.env
+
+# Node.js modules
+node_modules/
+build/
+
+# OS generated files
+.DS_Store
+
