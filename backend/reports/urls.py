@@ -1,8 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, ReportViewSet
 
-# Initialize the router for automatic RESTful endpoint generation
+from civic_api.viewsets import CategoryViewSet, ReportViewSet
+
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet)
 router.register(r'reports', ReportViewSet)

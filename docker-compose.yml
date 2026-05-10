@@ -1,8 +1,11 @@
-version: '3.8'
-
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
   db:
-    # Using PostGIS image natively for robust spatial data operations
     image: postgis/postgis:15-3.3
     environment:
       - POSTGRES_USER=urban_admin
@@ -17,10 +20,9 @@ services:
   backend:
     build:
       context: ./backend
-    # Run migrations and start the Django development server
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+             daphne -b 0.0.0.0 -p 8000 core.asgi:application"
     volumes:
       - ./backend:/app
     ports:
@@ -30,21 +32,35 @@ services:
       - DB_NAME=urbanhelper_db
       - DB_USER=urban_admin
       - DB_PASS=urban_secret
+      - REDIS_HOST=redis
     depends_on:
       - db
+      - redis
 
-  frontend:
+  frontend-citizen:
     build:
-      context: ./frontend
+      context: ./frontend-citizen
     volumes:
-      - ./frontend:/app
+      - ./frontend-citizen:/app
       - /app/node_modules
     ports:
-      - "3000:3000"
-    # Essential for hot-reloading in Windows/Mac Docker environments
+      - "3001:3000"
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - VITE_API_BASE=http://localhost:8080
+      - VITE_WS_BASE=ws://localhost:8080
+
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+    volumes:
+      - ./frontend-admin:/app
+      - /app/node_modules
+    ports:
+      - "3002:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_API_BASE=http://localhost:8080
 
 volumes:
-  # Persistent volume for database data
   postgres_data:

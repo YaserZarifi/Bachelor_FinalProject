@@ -1,0 +1,64 @@
+{
+  "info": {
+    "name": "UrbanHelper API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "access", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth / token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/token/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"changeme\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Reports / list (auth)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "url": "{{baseUrl}}/api/reports/"
+      }
+    },
+    {
+      "name": "Reports / create (guest multipart)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "description", "value": "تست پستمن", "type": "text" },
+            { "key": "location", "value": "POINT(51.389 35.6892)", "type": "text" },
+            { "key": "image_before", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/api/reports/"
+      }
+    },
+    {
+      "name": "Reports / transition (staff)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access}}" }],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "status", "value": "UNDER_REVIEW", "type": "text" }
+          ]
+        },
+        "url": "{{baseUrl}}/api/reports/1/transition/"
+      }
+    }
+  ]
+}

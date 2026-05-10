@@ -1,48 +1,80 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 
+
 class Category(models.Model):
-    # Name of the category (e.g., Pothole, Lighting, Trash)
     name = models.CharField(max_length=100)
-    # Optional detailed description
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "دسته‌بندی"
+        verbose_name_plural = "دسته‌بندی‌ها"
+
+
 class Report(models.Model):
-    # State Machine for the report lifecycle
     STATUS_CHOICES = [
-        ('SUBMITTED', 'Submitted'),
-        ('UNDER_REVIEW', 'Under Review'),
-        ('ASSIGNED', 'Assigned'),
-        ('IN_PROGRESS', 'In Progress'),
-        ('RESOLVED', 'Resolved'),
-        ('CLOSED', 'Closed'),
+        ('SUBMITTED',    'ثبت شده'),
+        ('UNDER_REVIEW', 'در حال بررسی'),
+        ('ASSIGNED',     'ارجاع داده‌شده'),
+        ('IN_PROGRESS',  'در حال اقدام'),
+        ('RESOLVED',     'حل‌شده'),
+        ('CLOSED',       'مختومه'),
     ]
 
-    # Nullable user field allows anonymous/guest citizens to submit reports
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name="کاربر"
+    )
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name="دسته‌بندی"
+    )
+    description = models.TextField(verbose_name="توضیحات")
+    location = models.PointField(srid=4326, verbose_name="موقعیت مکانی")
+    image_before = models.ImageField(upload_to='reports/before/', verbose_name="تصویر قبل")
+    image_after = models.ImageField(upload_to='reports/after/', blank=True, null=True, verbose_name="تصویر بعد")
 
-    # Core report details
-    description = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SUBMITTED', verbose_name="وضعیت")
+    is_urgent = models.BooleanField(default=False, verbose_name="فوری")
 
-    # PostGIS spatial field to store exact GPS coordinates
-    location = models.PointField(srid=4326)
+    # ── NLP Fields ──────────────────────────────────────────────
+    nlp_meta = models.JSONField(
+        null=True, blank=True,
+        verbose_name="متادیتای NLP",
+    )
+    nlp_suggested_category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="nlp_suggested_reports",
+        verbose_name="دسته پیشنهادی NLP",
+    )
+    nlp_category_confidence = models.FloatField(
+        null=True, blank=True,
+        verbose_name="ضریب اطمینان NLP",
+    )
+    # ────────────────────────────────────────────────────────────
 
-    # Initial image taken by the citizen
-    image_before = models.ImageField(upload_to='reports/before/')
-    # Image uploaded by the contractor after fixing the issue
-    image_after = models.ImageField(upload_to='reports/after/', blank=True, null=True)
-
-    # Tracking and NLP prioritization fields
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SUBMITTED')
-    is_urgent = models.BooleanField(default=False)
-
-    # Auto-generated timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="آخرین به‌روزرسانی")
 
     def __str__(self):
-        return f"Report {self.id} - {self.get_status_display()}"
+        return f"گزارش #{self.id} — {self.get_status_display()}"
+
+    class Meta:
+        verbose_name = "گزارش"
+        verbose_name_plural = "گزارش‌ها"
+        ordering = ["-created_at"]
+
+    @property
+    def nlp_sentiment(self):
+        if self.nlp_meta:
+            return self.nlp_meta.get("sentiment_label_fa")
+        return None
+
+    @property
+    def nlp_crisis_keywords(self):
+        if self.nlp_meta:
+            return self.nlp_meta.get("crisis_keywords_found", [])
+        return []
