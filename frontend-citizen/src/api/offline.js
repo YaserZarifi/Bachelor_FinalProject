@@ -1,70 +1,120 @@
 import { api } from './client'
 
-const STORAGE_KEY = 'uh_pending_reports'
+/**
+ * Offline-First queue for trusted captures.
+ *
+ * The proposal's guarantee is that a report captured in a network dead-zone is
+ * stored locally *intact* and synced later without losing or altering its bound
+ * location/timestamp. We keep the real image Blob plus its capture metadata in
+ * IndexedDB (localStorage can't hold blobs and base64 bloats ~33%), and replay
+ * the queue verbatim once connectivity returns.
+ */
 
-/** Get pending reports from localStorage */
-export function getPendingReports() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return []
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return []
-  }
-}
+const DB_NAME = 'urbanhelper'
+const DB_VERSION = 1
+const STORE = 'pending_reports'
 
-/** Save a report locally for later sync */
-export function saveReportOffline(reportData, imageFile) {
+function openDB() {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const pending = getPendingReports()
-      const newItem = {
-        id: Date.now(), // temporary local ID
-        data: reportData,
-        image: reader.result, // base64 string
-        timestamp: new Date().toISOString()
+    const req = indexedDB.open(DB_NAME, DB_VERSION)
+    req.onupgradeneeded = () => {
+      const db = req.result
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE, { keyPath: 'id' })
       }
-      pending.push(newItem)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pending))
-      resolve(newItem)
     }
-    reader.onerror = reject
-    reader.readAsDataURL(imageFile)
+    req.onsuccess = () => resolve(req.result)
+    req.onerror = () => reject(req.error)
   })
 }
 
-/** Attempt to sync all pending reports */
-export async function syncReports() {
-  const pending = getPendingReports()
-  if (pending.length === 0) return { synced: 0, failed: 0 }
+function tx(db, mode) {
+  return db.transaction(STORE, mode).objectStore(STORE)
+}
 
+/** List queued captures (without resolving blobs into URLs). */
+export async function getPendingReports() {
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const req = tx(db, 'readonly').getAll()
+    req.onsuccess = () => resolve(req.result || [])
+    req.onerror = () => reject(req.error)
+  })
+}
+
+export async function countPendingReports() {
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const req = tx(db, 'readonly').count()
+    req.onsuccess = () => resolve(req.result || 0)
+    req.onerror = () => reject(req.error)
+  })
+}
+
+/**
+ * Persist a capture package for later sync.
+ * `capture` is the object emitted by <CameraCapture/>.
+ */
+export async function saveReportOffline({ category, description, capture }) {
+  const db = await openDB()
+  const item = {
+    id: `${Date.now()}-${Math.round(performance.now())}`,
+    category: category || null,
+    description,
+    blob: capture.blob, // IndexedDB stores Blobs natively
+    lat: capture.lat,
+    lng: capture.lng,
+    accuracy: capture.accuracy,
+    capturedAt: capture.capturedAt,
+    integrityHash: capture.integrityHash,
+    queuedAt: new Date().toISOString(),
+  }
+  return new Promise((resolve, reject) => {
+    const req = tx(db, 'readwrite').put(item)
+    req.onsuccess = () => resolve(item)
+    req.onerror = () => reject(req.error)
+  })
+}
+
+async function deletePending(id) {
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const req = tx(db, 'readwrite').delete(id)
+    req.onsuccess = () => resolve()
+    req.onerror = () => reject(req.error)
+  })
+}
+
+/** Build the multipart payload shared by online submit and offline sync. */
+export function buildReportFormData(item) {
+  const fd = new FormData()
+  if (item.category) fd.append('category', item.category)
+  fd.append('description', item.description)
+  fd.append('location', `POINT(${item.lng} ${item.lat})`)
+  fd.append('capture_source', 'CAMERA')
+  fd.append('captured_at', item.capturedAt)
+  if (item.accuracy != null) fd.append('gps_accuracy', Math.round(item.accuracy))
+  if (item.integrityHash) fd.append('client_integrity_hash', item.integrityHash)
+  fd.append('image_before', item.blob, 'capture.jpg')
+  return fd
+}
+
+/** Attempt to sync every queued capture; keep failures in the queue. */
+export async function syncReports() {
+  const pending = await getPendingReports()
   const results = { synced: 0, failed: 0 }
-  const stillPending = []
 
   for (const item of pending) {
     try {
-      // Convert base64 back to blob
-      const res = await fetch(item.image)
-      const blob = await res.blob()
-      
-      const fd = new FormData()
-      Object.entries(item.data).forEach(([k, v]) => {
-        if (v) fd.append(k, v)
+      await api.post('reports/', buildReportFormData(item), {
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
-      fd.append('image_before', blob, 'offline_report.jpg')
-
-      await api.post('reports/', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+      await deletePending(item.id)
       results.synced++
     } catch (err) {
       console.error('Sync failed for item', item.id, err)
-      stillPending.push(item)
       results.failed++
     }
   }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(stillPending))
   return results
 }

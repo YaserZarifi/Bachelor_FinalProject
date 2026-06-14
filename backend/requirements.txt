@@ -16,3 +16,6 @@ tzdata==2026.2
 anthropic>=0.40.0
 scikit-learn>=1.4.0
 numpy>=1.26.0
+drf-spectacular==0.28.0
+celery==5.4.0
+google-generativeai==0.8.4

@@ -6,5 +6,6 @@ admin.site.register(Category)
 
 @admin.register(Report)
 class ReportAdmin(GISModelAdmin):
-    list_display = ('id', 'category', 'status', 'is_urgent', 'created_at')
-    list_filter = ('status', 'is_urgent', 'category')
+    list_display = ('id', 'category', 'status', 'is_urgent', 'capture_source', 'created_at')
+    list_filter = ('status', 'is_urgent', 'capture_source', 'category')
+    readonly_fields = ('capture_source', 'captured_at', 'gps_accuracy', 'client_integrity_hash')

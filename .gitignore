@@ -7,6 +7,19 @@ __pycache__/
 node_modules/
 build/
 
+# Frontend build output
+dist/
+
+# User-uploaded media
+backend/media/
+
+# Trained NLP model artifacts
+backend/nlp/model_files/
+
+# Scratch / local-only files
+tmp.js
+proposal_text.txt
+
 # OS generated files
 .DS_Store
 

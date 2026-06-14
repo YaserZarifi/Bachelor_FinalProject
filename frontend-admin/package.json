@@ -10,12 +10,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.3",
+    "@mui/material": "^6.4.3",
     "axios": "^1.15.2",
+    "framer-motion": "^11.18.2",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.469.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-hot-toast": "^2.5.2",
     "react-leaflet": "^5.0.0",
-    "react-router-dom": "^7.11.0"
+    "react-router-dom": "^7.11.0",
+    "recharts": "^2.15.1",
+    "stylis": "^4.3.6",
+    "stylis-plugin-rtl": "^2.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

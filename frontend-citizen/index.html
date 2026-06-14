@@ -4,15 +4,28 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#4f46e5" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <title>شهریاور | گزارش شهروندی</title>
+    <title>شهریاور | گزارش شهروندی هوشمند</title>
+    <script>
+      // Apply the saved (or system) theme before paint to avoid a flash.
+      (function () {
+        try {
+          var t = localStorage.getItem('theme')
+          var dark = t
+            ? t === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
   </head>
-  <body class="bg-slate-50 antialiased">
+  <body class="antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

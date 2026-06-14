@@ -24,6 +24,13 @@ export function logoutClient() {
   localStorage.removeItem('refresh_token')
 }
 
+/** Build an absolute media URL from a possibly-relative path returned by the API. */
+export function mediaUrl(path) {
+  if (!path) return ''
+  if (/^https?:\/\//i.test(path)) return path
+  return `${API}${path.startsWith('/') ? '' : '/'}${path}`
+}
+
 export function wsBaseUrl() {
   const raw = import.meta.env.VITE_WS_BASE || API.replace(/^http/, 'ws')
   return raw.replace(/\/$/, '')

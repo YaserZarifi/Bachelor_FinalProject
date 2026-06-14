@@ -21,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ReportSerializer(GeoFeatureModelSerializer):
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_name = serializers.SerializerMethodField(read_only=True)
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), allow_null=True, required=False
     )
@@ -43,6 +43,10 @@ class ReportSerializer(GeoFeatureModelSerializer):
             "image_after",
             "status",
             "is_urgent",
+            "capture_source",
+            "captured_at",
+            "gps_accuracy",
+            "client_integrity_hash",
             "nlp_meta",
             "nlp_suggested_category",
             "nlp_category_confidence",
@@ -61,6 +65,24 @@ class ReportSerializer(GeoFeatureModelSerializer):
             "updated_at",
             "is_urgent",
         )
+
+    # Trusted-capture metadata may only be set once, at creation time. Staff
+    # edits must never rewrite the original capture record.
+    _CAPTURE_FIELDS = (
+        "capture_source",
+        "captured_at",
+        "gps_accuracy",
+        "client_integrity_hash",
+    )
+
+    def update(self, instance, validated_data):
+        for field in self._CAPTURE_FIELDS:
+            validated_data.pop(field, None)
+        return super().update(instance, validated_data)
+
+    def get_category_name(self, obj):
+        cat = getattr(obj, "category", None)
+        return cat.name if cat else None
 
     def validate(self, attrs):
         instance = getattr(self, "instance", None)
