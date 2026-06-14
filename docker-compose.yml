@@ -12,10 +12,15 @@ services:
       - POSTGRES_PASSWORD=urban_secret
       - POSTGRES_DB=urbanhelper_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urban_admin -d urbanhelper_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -33,9 +38,31 @@ services:
       - DB_USER=urban_admin
       - DB_PASS=urban_secret
       - REDIS_HOST=redis
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  celery_worker:
+    build:
+      context: ./backend
+    command: celery -A core worker -l info
+    volumes:
+      - ./backend:/app
+    environment:
+      - DB_HOST=db
+      - DB_NAME=urbanhelper_db
+      - DB_USER=urban_admin
+      - DB_PASS=urban_secret
+      - REDIS_HOST=redis
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   frontend-citizen:
     build:

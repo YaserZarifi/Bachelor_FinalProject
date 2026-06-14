@@ -7,3 +7,48 @@ body,
 #root {
   min-height: 100%;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.35);
+}
+
+/* Leaflet polish + dark map tiles when in dark mode */
+.leaflet-container {
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+  background: transparent;
+}
+
+@keyframes pinpulse {
+  0% {
+    transform: translate(-50%, -2px) scale(0.7);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -2px) scale(2.2);
+    opacity: 0;
+  }
+}
+.dark .leaflet-tile {
+  filter: brightness(0.7) invert(1) contrast(0.9) hue-rotate(200deg) saturate(0.7);
+}
+.dark .leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.7) !important;
+  color: #94a3b8 !important;
+}
+.dark .leaflet-control-attribution a {
+  color: #cbd5e1 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

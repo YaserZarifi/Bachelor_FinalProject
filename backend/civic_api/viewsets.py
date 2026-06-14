@@ -110,7 +110,6 @@ class ReportViewSet(viewsets.ModelViewSet):
         report = self.get_object()
         serializer = ReportTransitionSerializer(
             data=request.data,
-            files=request.FILES,
             context={"report": report},
         )
         serializer.is_valid(raise_exception=True)

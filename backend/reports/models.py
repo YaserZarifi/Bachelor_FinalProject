@@ -40,6 +40,30 @@ class Report(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SUBMITTED', verbose_name="وضعیت")
     is_urgent = models.BooleanField(default=False, verbose_name="فوری")
 
+    # ── Trusted-capture metadata (anti-fraud, Offline-First) ────
+    CAPTURE_SOURCE_CHOICES = [
+        ('CAMERA',  'دوربین درون‌برنامه‌ای'),
+        ('UNKNOWN', 'نامشخص'),
+    ]
+    capture_source = models.CharField(
+        max_length=12, choices=CAPTURE_SOURCE_CHOICES, default='UNKNOWN',
+        verbose_name="منبع تصویر",
+        help_text="آیا تصویر مستقیماً با دوربین درون‌برنامه ثبت شده یا منبع آن نامشخص است.",
+    )
+    captured_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="زمان ثبت در دستگاه",
+        help_text="برچسب زمانی لحظهٔ ثبت تصویر روی دستگاه کاربر.",
+    )
+    gps_accuracy = models.FloatField(
+        null=True, blank=True, verbose_name="دقت موقعیت (متر)",
+        help_text="شعاع خطای GPS گزارش‌شده توسط دستگاه، بر حسب متر.",
+    )
+    client_integrity_hash = models.CharField(
+        max_length=64, blank=True, default="", verbose_name="اثر انگشت یکپارچگی",
+        help_text="هش SHA-256 بستهٔ تصویر+مختصات+زمان که سمت کلاینت محاسبه شده است.",
+    )
+    # ────────────────────────────────────────────────────────────
+
     # ── NLP Fields ──────────────────────────────────────────────
     nlp_meta = models.JSONField(
         null=True, blank=True,

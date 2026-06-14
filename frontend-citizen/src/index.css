@@ -2,8 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-  min-height: 100%;
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-500 dark:bg-ink dark:text-slate-100;
+  }
+
+  /* Themed scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300/70 dark:bg-white/10;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-400/70;
+  }
+}
+
+@layer components {
+  /* Frosted glass surfaces */
+  .glass {
+    @apply rounded-4xl border border-white/50 bg-white/60 shadow-glass backdrop-blur-xl
+           dark:border-white/10 dark:bg-white/[0.045] dark:shadow-glass-dark;
+  }
+  .glass-strong {
+    @apply rounded-4xl border border-white/60 bg-white/80 shadow-glass backdrop-blur-2xl
+           dark:border-white/10 dark:bg-slate-900/70 dark:shadow-glass-dark;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl font-bold
+           transition-all duration-300 disabled:pointer-events-none disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-l from-brand-600 to-brand-400 px-6 py-3 text-white
+           shadow-glow hover:-translate-y-0.5 hover:shadow-glow-lg;
+  }
+  .btn-emerald {
+    @apply btn bg-gradient-to-l from-emerald-600 to-emerald-400 px-6 py-3 text-white
+           shadow-glow-emerald hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply btn border border-slate-200 bg-white/70 px-6 py-3 text-slate-700 backdrop-blur
+           hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10;
+  }
+
+  /* Form controls */
+  .label {
+    @apply mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-slate-200/90 bg-white/70 px-4 py-3 text-slate-900
+           outline-none transition placeholder:text-slate-400
+           focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15
+           dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold;
+  }
+
+  /* Gradient display text */
+  .text-aurora {
+    @apply bg-aurora-text bg-clip-text text-transparent;
+  }
+
+  /* Aurora animated background blobs */
+  .aurora-bg {
+    @apply pointer-events-none fixed inset-0 -z-10 overflow-hidden;
+  }
+  .aurora-blob {
+    @apply absolute rounded-full blur-3xl;
+    will-change: transform;
+  }
+}
+
+/* Calm everything down for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Leaflet polish: rounded popups that respect the theme */
+.leaflet-container {
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+  background: transparent;
+}
+.dark .leaflet-tile {
+  filter: brightness(0.7) invert(1) contrast(0.9) hue-rotate(200deg) saturate(0.7);
+}
+.dark .leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.7) !important;
+  color: #94a3b8 !important;
+}
+.dark .leaflet-control-attribution a {
+  color: #cbd5e1 !important;
 }
