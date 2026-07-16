@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
   Drawer,
@@ -36,11 +36,13 @@ import {
   Sun,
   Moon,
   Inbox,
-  MapPin,
   Menu as MenuIcon,
   Brain,
   ImageOff,
   Activity,
+  RefreshCw,
+  WifiOff,
+  Radio,
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -64,7 +66,7 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
-import { api, flattenFeatures, logoutClient, mediaUrl } from '../api/client';
+import { api, flattenFeatures, logoutClient, mediaUrl, wsBaseUrl } from '../api/client';
 import toast from 'react-hot-toast';
 import AuroraBackground from '../components/AuroraBackground';
 import CountUp from '../components/CountUp';
@@ -75,10 +77,11 @@ const DRAWER_WIDTH = 280;
 const DefaultIcon = L.icon({ iconUrl: icon, shadowUrl: iconShadow, iconAnchor: [12, 41] });
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// MUI Chip color per status (Civic Signal palette).
 const STATUS_COLORS = {
   SUBMITTED: 'info',
-  UNDER_REVIEW: 'warning',
-  ASSIGNED: 'secondary',
+  UNDER_REVIEW: 'info',
+  ASSIGNED: 'primary',
   IN_PROGRESS: 'primary',
   RESOLVED: 'success',
   CLOSED: 'default',
@@ -93,8 +96,16 @@ const STATUSES = [
   ['CLOSED', 'مختومه'],
 ];
 const STATUS_LABEL = Object.fromEntries(STATUSES);
-const PIE_COLORS = ['#06b6d4', '#f59e0b', '#8b5cf6', '#6366f1', '#10b981', '#64748b'];
 
+// sky → sky → beacon → beacon → civic → slate
+const STATUS_HEX = {
+  SUBMITTED: '#0ea5e9',
+  UNDER_REVIEW: '#38bdf8',
+  ASSIGNED: '#f9b526',
+  IN_PROGRESS: '#f2a20d',
+  RESOLVED: '#10b981',
+  CLOSED: '#64748b',
+};
 // Mirrors backend ALLOWED_STATUS_TRANSITIONS so the UI only offers legal moves.
 const ALLOWED_NEXT = {
   SUBMITTED: ['UNDER_REVIEW', 'ASSIGNED'],
@@ -103,15 +114,6 @@ const ALLOWED_NEXT = {
   IN_PROGRESS: ['RESOLVED', 'ASSIGNED'],
   RESOLVED: ['CLOSED', 'IN_PROGRESS'],
   CLOSED: [],
-};
-
-const STATUS_HEX = {
-  SUBMITTED: '#06b6d4',
-  UNDER_REVIEW: '#f59e0b',
-  ASSIGNED: '#8b5cf6',
-  IN_PROGRESS: '#6366f1',
-  RESOLVED: '#10b981',
-  CLOSED: '#64748b',
 };
 
 // The API may return geometry either as GeoJSON ({type, coordinates:[lng,lat]})
@@ -131,9 +133,9 @@ function toLatLng(geometry) {
 }
 
 // Custom colored teardrop pin (no image asset → always renders). Urgent
-// reports get a rose pin with a pulsing halo so they stand out on the map.
+// reports get a coral pin with a pulsing halo so they stand out on the map.
 function pinIcon(status, urgent) {
-  const color = urgent ? '#f43f5e' : STATUS_HEX[status] || '#6366f1';
+  const color = urgent ? '#f43f5e' : STATUS_HEX[status] || '#f2a20d';
   const halo = urgent
     ? `<span style="position:absolute;left:50%;top:0;transform:translate(-50%,-2px);width:30px;height:30px;border-radius:50%;background:${color};opacity:.35;animation:pinpulse 1.6s ease-out infinite"></span>`
     : '';
@@ -147,6 +149,25 @@ function pinIcon(status, urgent) {
     iconAnchor: [13, 24],
     popupAnchor: [0, -22],
   });
+}
+
+// Small "beacon" brand mark used in the drawer.
+function BeaconMark({ size = 52 }) {
+  return (
+    <Box
+      component="svg"
+      viewBox="0 0 48 48"
+      sx={{ width: size, height: size, filter: 'drop-shadow(0 8px 16px rgba(242,162,13,0.4))' }}
+    >
+      <circle cx="24" cy="19" r="15" fill="none" stroke="#f2a20d" strokeWidth="1.6" opacity="0.4" />
+      <path
+        d="M24 6c-6.2 0-11 4.7-11 10.7 0 7.6 9.4 17.4 10.4 18.4a.9.9 0 0 0 1.3 0C25.6 34.1 35 24.3 35 16.7 35 10.7 30.2 6 24 6Z"
+        fill="#f9b526"
+      />
+      <circle cx="24" cy="16.4" r="4.4" fill="#0b1220" />
+      <circle cx="24" cy="16.4" r="1.9" fill="#34d399" />
+    </Box>
+  );
 }
 
 // Drives the map view: zoom to the selected report, otherwise fit ALL reports
@@ -246,11 +267,30 @@ function DetailPhoto({ src, label }) {
           fontSize: 11,
           fontWeight: 700,
           color: '#fff',
-          bgcolor: 'rgba(15,23,42,0.7)',
+          bgcolor: 'rgba(11,18,32,0.75)',
         }}
       >
         {label}
       </Box>
+    </Box>
+  );
+}
+
+function ChartEmpty({ label }) {
+  return (
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
+        color: 'text.secondary',
+      }}
+    >
+      <BarChart3 size={30} style={{ opacity: 0.4 }} />
+      <Typography variant="body2">{label}</Typography>
     </Box>
   );
 }
@@ -281,7 +321,7 @@ function KpiCard({ icon: Icon, label, value, color, delay }) {
               <Icon size={24} />
             </Box>
             <Box>
-              <Typography variant="h4" sx={{ fontWeight: 900, lineHeight: 1 }}>
+              <Typography variant="h4" className="tnum" sx={{ fontWeight: 900, lineHeight: 1 }}>
                 <CountUp value={value} />
               </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
@@ -302,6 +342,8 @@ export default function Dashboard() {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [features, setFeatures] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [live, setLive] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('');
   const [urgentOnly, setUrgentOnly] = useState(false);
@@ -310,28 +352,41 @@ export default function Dashboard() {
   const [nextStatus, setNextStatus] = useState('');
   const [afterFile, setAfterFile] = useState(null);
 
+  const mainRef = useRef(null);
+  const analyticsRef = useRef(null);
+
   // Open the drawer by default on desktop, collapse it on small screens.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDrawerOpen(isDesktop);
   }, [isDesktop]);
 
-  async function load() {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res = await api.get('reports/');
       setFeatures(flattenFeatures(res.data));
+      setLoadError(false);
     } catch {
-      toast.error('خطا در بارگذاری گزارش‌ها');
+      if (!silent) {
+        setLoadError(true);
+        toast.error('خطا در بارگذاری گزارش‌ها');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
-  }, []);
+  }, [load]);
+
+  // Silent background refresh so multiple staff see each other's changes.
+  useEffect(() => {
+    const id = setInterval(() => load(true), 30000);
+    return () => clearInterval(id);
+  }, [load]);
 
   const filtered = useMemo(() => {
     return features.filter((f) => {
@@ -343,7 +398,12 @@ export default function Dashboard() {
     });
   }, [features, statusFilter, urgentOnly, search]);
 
-  const selected = filtered.find((f) => String(f.id) === String(selectedId));
+  // Track selection against the FULL set so applying a filter that hides the
+  // selected report doesn't make its detail card vanish.
+  const selected = useMemo(
+    () => features.find((f) => String(f.id) === String(selectedId)),
+    [features, selectedId],
+  );
   const allowedNext = selected ? ALLOWED_NEXT[selected.properties?.status] || [] : [];
 
   // Reset the transition form whenever a different report is selected.
@@ -352,6 +412,47 @@ export default function Dashboard() {
     setNextStatus('');
     setAfterFile(null);
   }, [selectedId]);
+
+  // Live status for the selected report (reconnecting).
+  useEffect(() => {
+    if (!selected?.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLive(false);
+      return undefined;
+    }
+    let ws;
+    let closed = false;
+    let attempt = 0;
+    let timer;
+    function connect() {
+      const qs = new URLSearchParams();
+      const access = localStorage.getItem('access_token');
+      if (access) qs.set('access', access);
+      try {
+        ws = new WebSocket(`${wsBaseUrl()}/ws/reports/${selected.id}/?${qs.toString()}`);
+      } catch {
+        return;
+      }
+      ws.onopen = () => {
+        attempt = 0;
+        setLive(true);
+      };
+      ws.onmessage = () => load(true);
+      ws.onclose = () => {
+        setLive(false);
+        if (closed) return;
+        attempt += 1;
+        timer = setTimeout(connect, Math.min(1000 * 2 ** attempt, 15000));
+      };
+      ws.onerror = () => ws && ws.close();
+    }
+    connect();
+    return () => {
+      closed = true;
+      clearTimeout(timer);
+      ws?.close();
+    };
+  }, [selected?.id, load]);
 
   const center = useMemo(() => {
     const active = selected || filtered[0];
@@ -461,12 +562,18 @@ export default function Dashboard() {
     window.location.href = '/login';
   };
 
+  const scrollTo = (ref) => {
+    if (!isDesktop) setDrawerOpen(false);
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const tooltipStyle = {
-    backgroundColor: mode === 'dark' ? '#0f172a' : '#ffffff',
+    backgroundColor: muiTheme.palette.background.paper,
     border: `1px solid ${muiTheme.palette.divider}`,
     borderRadius: 12,
     color: muiTheme.palette.text.primary,
   };
+  const cursorFill = 'rgba(242,162,13,0.1)';
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' }}>
@@ -486,13 +593,28 @@ export default function Dashboard() {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 800 }}>
             داشبورد عملیاتی شهریاور
           </Typography>
+          {selected && (
+            <Chip
+              size="small"
+              icon={<Radio size={13} />}
+              label={live ? 'زنده' : 'آفلاین'}
+              color={live ? 'success' : 'default'}
+              variant={live ? 'filled' : 'outlined'}
+              sx={{ mr: 1, fontWeight: 700 }}
+            />
+          )}
+          <MuiTooltip title="به‌روزرسانی">
+            <IconButton color="inherit" onClick={() => load()} aria-label="به‌روزرسانی">
+              <RefreshCw size={19} />
+            </IconButton>
+          </MuiTooltip>
           <MuiTooltip title={mode === 'dark' ? 'حالت روشن' : 'حالت تاریک'}>
-            <IconButton color="inherit" onClick={toggle}>
+            <IconButton color="inherit" onClick={toggle} aria-label="تغییر حالت رنگ">
               {mode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </IconButton>
           </MuiTooltip>
           <MuiTooltip title="خروج">
-            <IconButton color="inherit" onClick={handleLogout}>
+            <IconButton color="inherit" onClick={handleLogout} aria-label="خروج">
               <LogOut size={20} />
             </IconButton>
           </MuiTooltip>
@@ -500,28 +622,37 @@ export default function Dashboard() {
       </AppBar>
 
       <Drawer
-        variant="permanent"
+        variant={isDesktop ? 'permanent' : 'temporary'}
         anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        ModalProps={{ keepMounted: true }}
         sx={{
           flexShrink: 0,
-          width: drawerOpen ? DRAWER_WIDTH : 0,
-          transition: muiTheme.transitions.create('width', {
-            duration: muiTheme.transitions.duration.enteringScreen,
-          }),
-          '& .MuiDrawer-paper': {
-            position: 'relative',
-            width: drawerOpen ? DRAWER_WIDTH : 0,
-            height: 'auto',
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            overflowX: 'hidden',
-            border: 0,
-            borderLeft: drawerOpen ? `1px solid ${muiTheme.palette.divider}` : 0,
-            transition: muiTheme.transitions.create('width', {
-              duration: muiTheme.transitions.duration.enteringScreen,
-            }),
-          },
+          ...(isDesktop
+            ? {
+                width: drawerOpen ? DRAWER_WIDTH : 0,
+                transition: muiTheme.transitions.create('width', {
+                  duration: muiTheme.transitions.duration.enteringScreen,
+                }),
+                '& .MuiDrawer-paper': {
+                  position: 'relative',
+                  width: drawerOpen ? DRAWER_WIDTH : 0,
+                  height: 'auto',
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflowX: 'hidden',
+                  border: 0,
+                  borderLeft: drawerOpen ? `1px solid ${muiTheme.palette.divider}` : 0,
+                  transition: muiTheme.transitions.create('width', {
+                    duration: muiTheme.transitions.duration.enteringScreen,
+                  }),
+                },
+              }
+            : {
+                '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' },
+              }),
         }}
       >
         {/* Spacer so drawer content clears the fixed AppBar */}
@@ -537,112 +668,99 @@ export default function Dashboard() {
             flexDirection: 'column',
           }}
         >
-        <Box sx={{ p: 3, textAlign: 'center' }}>
-          <Box
-            sx={{
-              width: 52,
-              height: 52,
-              mx: 'auto',
-              mb: 1.5,
-              borderRadius: 4,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-              boxShadow: '0 12px 28px -10px rgba(99,102,241,0.6)',
-            }}
-          >
-            <MapPin size={26} />
+          <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
+              <BeaconMark size={52} />
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 900 }}>
+              شهریاور
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              پنل نظارتی مدیران
+            </Typography>
           </Box>
-          <Typography variant="h5" sx={{ fontWeight: 900 }}>
-            شهریاور
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            پنل نظارتی مدیران
-          </Typography>
-        </Box>
-        <Divider sx={{ opacity: 0.5 }} />
-        <List sx={{ px: 2, py: 1 }}>
-          <ListItem disablePadding sx={{ mb: 1 }}>
-            <ListItemButton selected>
-              <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>
-                <LayoutDashboard size={20} />
-              </ListItemIcon>
-              <ListItemText primary="بررسی گزارش‌ها" primaryTypographyProps={{ fontWeight: 700 }} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ mb: 1 }}>
-            <ListItemButton>
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <BarChart3 size={20} />
-              </ListItemIcon>
-              <ListItemText primary="آمار و ارقام" />
-            </ListItemButton>
-          </ListItem>
-        </List>
+          <Divider sx={{ opacity: 0.5 }} />
+          <List sx={{ px: 2, py: 1 }}>
+            <ListItem disablePadding sx={{ mb: 1 }}>
+              <ListItemButton selected onClick={() => scrollTo(mainRef)}>
+                <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>
+                  <LayoutDashboard size={20} />
+                </ListItemIcon>
+                <ListItemText primary="بررسی گزارش‌ها" primaryTypographyProps={{ fontWeight: 700 }} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ mb: 1 }}>
+              <ListItemButton onClick={() => scrollTo(analyticsRef)}>
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <BarChart3 size={20} />
+                </ListItemIcon>
+                <ListItemText primary="آمار و ارقام" />
+              </ListItemButton>
+            </ListItem>
+          </List>
 
-        <Box sx={{ mt: 'auto', p: 2 }}>
-          <Card sx={{ borderColor: 'primary.main' }}>
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1.5 }}>
-                جستجوی پیشرفته
-              </Typography>
-              <TextField
-                size="small"
-                fullWidth
-                placeholder="جستجو در توضیحات..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search size={16} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                select
-                size="small"
-                fullWidth
-                label="وضعیت"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                sx={{ mb: 2 }}
-              >
-                <MenuItem value="">همه</MenuItem>
-                {STATUSES.map(([k, v]) => (
-                  <MenuItem key={k} value={k}>
-                    {v}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <Button
-                fullWidth
-                variant={urgentOnly ? 'contained' : 'outlined'}
-                color="error"
-                size="small"
-                startIcon={<AlertTriangle size={16} />}
-                onClick={() => setUrgentOnly((v) => !v)}
-              >
-                {urgentOnly ? 'فقط موارد بحرانی' : 'نمایش همه'}
-              </Button>
-            </CardContent>
-          </Card>
-        </Box>
+          <Box sx={{ mt: 'auto', p: 2 }}>
+            <Card sx={{ borderColor: 'primary.main' }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1.5 }}>
+                  جستجوی پیشرفته
+                </Typography>
+                <TextField
+                  size="small"
+                  fullWidth
+                  placeholder="جستجو در توضیحات..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search size={16} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  select
+                  size="small"
+                  fullWidth
+                  label="وضعیت"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  sx={{ mb: 2 }}
+                >
+                  <MenuItem value="">همه</MenuItem>
+                  {STATUSES.map(([k, v]) => (
+                    <MenuItem key={k} value={k}>
+                      {v}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <Button
+                  fullWidth
+                  variant={urgentOnly ? 'contained' : 'outlined'}
+                  color="error"
+                  size="small"
+                  startIcon={<AlertTriangle size={16} />}
+                  onClick={() => setUrgentOnly((v) => !v)}
+                >
+                  {urgentOnly ? 'فقط موارد بحرانی' : 'نمایش همه'}
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
       </Drawer>
 
       <Box
         component="main"
+        ref={mainRef}
         sx={{
           flexGrow: 1,
           minWidth: 0,
           height: '100vh',
           overflowY: 'auto',
-          p: 3,
+          p: { xs: 2, md: 3 },
           position: 'relative',
           zIndex: 1,
           display: 'flex',
@@ -654,16 +772,16 @@ export default function Dashboard() {
         <Toolbar sx={{ p: 0, minHeight: { xs: 56, sm: 64 }, flexShrink: 0 }} />
 
         {/* KPI row */}
-        <Grid container spacing={3}>
-          <KpiCard icon={ListChecks} label="کل گزارش‌ها" value={kpis.total} color="linear-gradient(135deg,#6366f1,#06b6d4)" delay={0} />
-          <KpiCard icon={AlertTriangle} label="موارد بحرانی" value={kpis.urgent} color="linear-gradient(135deg,#f43f5e,#f59e0b)" delay={0.08} />
-          <KpiCard icon={Wrench} label="در حال اقدام" value={kpis.inProgress} color="linear-gradient(135deg,#4f46e5,#8b5cf6)" delay={0.16} />
-          <KpiCard icon={CheckCircle2} label="رسیدگی‌شده" value={kpis.resolved} color="linear-gradient(135deg,#10b981,#14b8a6)" delay={0.24} />
+        <Grid container spacing={{ xs: 2, md: 3 }}>
+          <KpiCard icon={ListChecks} label="کل گزارش‌ها" value={kpis.total} color="linear-gradient(135deg,#0ea5e9,#38bdf8)" delay={0} />
+          <KpiCard icon={AlertTriangle} label="موارد بحرانی" value={kpis.urgent} color="linear-gradient(135deg,#f43f5e,#fb7185)" delay={0.08} />
+          <KpiCard icon={Wrench} label="در حال اقدام" value={kpis.inProgress} color="linear-gradient(135deg,#d67f04,#f9b526)" delay={0.16} />
+          <KpiCard icon={CheckCircle2} label="رسیدگی‌شده" value={kpis.resolved} color="linear-gradient(135deg,#0d9c6e,#34d399)" delay={0.24} />
         </Grid>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           <Grid item xs={12} lg={8}>
-            <Card sx={{ height: 500, overflow: 'hidden', position: 'relative' }}>
+            <Card sx={{ height: { xs: 380, md: 500 }, overflow: 'hidden', position: 'relative' }}>
               {selectedId && (
                 <Button
                   size="small"
@@ -702,7 +820,7 @@ export default function Dashboard() {
           </Grid>
 
           <Grid item xs={12} lg={4}>
-            <Card sx={{ height: 500, display: 'flex', flexDirection: 'column' }}>
+            <Card sx={{ height: { xs: 420, md: 500 }, display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ p: 2, borderBottom: `1px solid ${muiTheme.palette.divider}` }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                   لیست گزارش‌ها
@@ -714,11 +832,21 @@ export default function Dashboard() {
                   <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
                     <CircularProgress size={24} />
                   </Box>
+                ) : loadError ? (
+                  <Box sx={{ textAlign: 'center', p: 4, color: 'text.secondary' }}>
+                    <WifiOff size={34} style={{ opacity: 0.6 }} />
+                    <Typography variant="body2" sx={{ mt: 1, mb: 2 }}>
+                      دریافت گزارش‌ها ناموفق بود.
+                    </Typography>
+                    <Button size="small" variant="outlined" startIcon={<RefreshCw size={15} />} onClick={() => load()}>
+                      تلاش دوباره
+                    </Button>
+                  </Box>
                 ) : filtered.length === 0 ? (
                   <Box sx={{ textAlign: 'center', p: 4, color: 'text.secondary' }}>
                     <Inbox size={36} style={{ opacity: 0.5 }} />
                     <Typography variant="body2" sx={{ mt: 1 }}>
-                      گزارشی یافت نشد
+                      {features.length === 0 ? 'هنوز گزارشی ثبت نشده است' : 'گزارشی با این فیلترها یافت نشد'}
                     </Typography>
                   </Box>
                 ) : (
@@ -730,12 +858,12 @@ export default function Dashboard() {
                       sx={{ mb: 1, flexDirection: 'column', alignItems: 'flex-start' }}
                     >
                       <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                        <Typography variant="subtitle2" className="tnum" sx={{ fontWeight: 'bold' }}>
                           #{f.id}
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 0.5 }}>
                           {f.properties?.is_urgent && (
-                            <Chip label="بحرانی" size="small" color="error" />
+                            <Chip label="فوری" size="small" color="error" />
                           )}
                           <Chip
                             label={STATUS_LABEL[f.properties?.status] || f.properties?.status}
@@ -761,21 +889,25 @@ export default function Dashboard() {
                 توزیع وضعیت گزارش‌ها
               </Typography>
               <Box sx={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <defs>
-                      <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#818cf8" />
-                        <stop offset="100%" stopColor="#06b6d4" />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: muiTheme.palette.text.secondary }} />
-                    <YAxis allowDecimals={false} tick={{ fill: muiTheme.palette.text.secondary }} />
-                    <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(99,102,241,0.08)' }} />
-                    <Bar dataKey="value" fill="url(#barFill)" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                {chartData.length === 0 ? (
+                  <ChartEmpty label="داده‌ای برای نمایش نیست" />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <defs>
+                        <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#f9b526" />
+                          <stop offset="100%" stopColor="#d67f04" />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: muiTheme.palette.text.secondary }} />
+                      <YAxis allowDecimals={false} tick={{ fill: muiTheme.palette.text.secondary }} />
+                      <Tooltip contentStyle={tooltipStyle} cursor={{ fill: cursorFill }} />
+                      <Bar dataKey="value" name="تعداد" fill="url(#barFill)" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </Box>
             </Card>
           </Grid>
@@ -786,26 +918,30 @@ export default function Dashboard() {
                 نمای کلی
               </Typography>
               <Box sx={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      dataKey="value"
-                      nameKey="label"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={55}
-                      outerRadius={95}
-                      paddingAngle={3}
-                    >
-                      {chartData.map((entry, i) => (
-                        <Cell key={entry.name} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={tooltipStyle} />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                  </PieChart>
-                </ResponsiveContainer>
+                {chartData.length === 0 ? (
+                  <ChartEmpty label="داده‌ای برای نمایش نیست" />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={95}
+                        paddingAngle={3}
+                      >
+                        {chartData.map((entry) => (
+                          <Cell key={entry.name} fill={STATUS_HEX[entry.name] || '#64748b'} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={tooltipStyle} />
+                      <Legend wrapperStyle={{ fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
               </Box>
             </Card>
           </Grid>
@@ -814,150 +950,151 @@ export default function Dashboard() {
             <Grid item xs={12}>
               <Card sx={{ p: 3, borderColor: 'primary.main' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  <Typography variant="h6" className="tnum" sx={{ fontWeight: 'bold' }}>
                     جزئیات گزارش #{selected.id}
                   </Typography>
                   {selected.properties?.is_urgent && (
-                    <Chip icon={<AlertTriangle size={14} />} label="بحرانی" color="error" />
+                    <Chip icon={<AlertTriangle size={14} />} label="فوری" color="error" />
                   )}
                 </Box>
 
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={7}>
-                <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.9 }}>
-                  {selected.properties?.description}
-                </Typography>
-
-                {/* Before / after images */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 2 }}>
-                  <DetailPhoto src={selected.properties?.image_before} label="قبل" />
-                  <DetailPhoto
-                    src={selected.properties?.image_after}
-                    label={selected.properties?.image_after ? 'بعد از رسیدگی' : 'در انتظار تصویر بعد'}
-                  />
-                </Box>
-
-                {/* Metadata grid */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 2 }}>
-                  <Meta label="دسته‌بندی" value={selected.properties?.category_name || 'تشخیص خودکار'} />
-                  <Meta
-                    label="گزارش‌دهنده"
-                    value={selected.properties?.user ? `کاربر #${selected.properties.user}` : 'مهمان'}
-                  />
-                  <Meta label="منبع تصویر" value={selected.properties?.capture_source} />
-                  <Meta
-                    label="دقت موقعیت"
-                    value={
-                      selected.properties?.gps_accuracy
-                        ? `±${Math.round(selected.properties.gps_accuracy)} متر`
-                        : null
-                    }
-                  />
-                  <Meta label="زمان ثبت" value={fmtDate(selected.properties?.created_at)} />
-                  <Meta label="آخرین تغییر" value={fmtDate(selected.properties?.updated_at)} />
-                </Box>
-
-                {/* AI analysis */}
-                {selected.properties?.nlp_meta && (
-                  <Box
-                    sx={{
-                      p: 1.5,
-                      mb: 2,
-                      borderRadius: 2,
-                      bgcolor: 'rgba(99,102,241,0.08)',
-                      border: '1px solid',
-                      borderColor: 'divider',
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}
-                    >
-                      <Brain size={14} /> تحلیل هوش مصنوعی
+                    <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.9 }}>
+                      {selected.properties?.description}
                     </Typography>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-                      <Meta label="دسته پیشنهادی" value={selected.properties.nlp_meta.suggested_category} />
-                      <Meta label="احساسات متن" value={selected.properties.nlp_meta.sentiment_label_fa} />
+
+                    {/* Before / after images */}
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 2 }}>
+                      <DetailPhoto src={selected.properties?.image_before} label="قبل" />
+                      <DetailPhoto
+                        src={selected.properties?.image_after}
+                        label={selected.properties?.image_after ? 'بعد از رسیدگی' : 'در انتظار تصویر بعد'}
+                      />
+                    </Box>
+
+                    {/* Metadata grid */}
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 2 }}>
+                      <Meta label="دسته‌بندی" value={selected.properties?.category_name || 'تشخیص خودکار'} />
                       <Meta
-                        label="اطمینان دسته‌بندی"
+                        label="گزارش‌دهنده"
+                        value={selected.properties?.user ? `کاربر #${selected.properties.user}` : 'مهمان'}
+                      />
+                      <Meta label="منبع تصویر" value={selected.properties?.capture_source} />
+                      <Meta
+                        label="دقت موقعیت"
                         value={
-                          selected.properties.nlp_meta.category_confidence != null
-                            ? `${Math.round(selected.properties.nlp_meta.category_confidence * 100)}٪`
+                          selected.properties?.gps_accuracy
+                            ? `±${Math.round(selected.properties.gps_accuracy)} متر`
                             : null
                         }
                       />
-                      <Meta
-                        label="شاخص بحران"
-                        value={selected.properties.nlp_meta.crisis_score}
-                      />
+                      <Meta label="زمان ثبت" value={fmtDate(selected.properties?.created_at)} />
+                      <Meta label="آخرین تغییر" value={fmtDate(selected.properties?.updated_at)} />
                     </Box>
-                  </Box>
-                )}
+
+                    {/* AI analysis */}
+                    {selected.properties?.nlp_meta && (
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          mb: 2,
+                          borderRadius: 2,
+                          bgcolor: 'rgba(242,162,13,0.08)',
+                          border: '1px solid',
+                          borderColor: 'divider',
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}
+                        >
+                          <Brain size={14} /> تحلیل هوش مصنوعی
+                        </Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+                          <Meta label="دسته پیشنهادی" value={selected.properties.nlp_meta.suggested_category} />
+                          <Meta label="احساسات متن" value={selected.properties.nlp_meta.sentiment_label_fa} />
+                          <Meta
+                            label="اطمینان دسته‌بندی"
+                            value={
+                              selected.properties.nlp_meta.category_confidence != null
+                                ? `${Math.round(selected.properties.nlp_meta.category_confidence * 100)}٪`
+                                : null
+                            }
+                          />
+                          <Meta label="شاخص بحران" value={selected.properties.nlp_meta.crisis_score} />
+                        </Box>
+                      </Box>
+                    )}
                   </Grid>
 
                   <Grid item xs={12} md={5}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    وضعیت فعلی:
-                  </Typography>
-                  <Chip
-                    label={STATUS_LABEL[selected.properties?.status] || selected.properties?.status}
-                    size="small"
-                    color={STATUS_COLORS[selected.properties?.status] || 'default'}
-                  />
-                </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        وضعیت فعلی:
+                      </Typography>
+                      <Chip
+                        label={STATUS_LABEL[selected.properties?.status] || selected.properties?.status}
+                        size="small"
+                        color={STATUS_COLORS[selected.properties?.status] || 'default'}
+                      />
+                    </Box>
 
-                {allowedNext.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary">
-                    این گزارش مختومه است و قابل تغییر نیست.
-                  </Typography>
-                ) : (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                      select
-                      label="انتقال به وضعیت بعدی"
-                      size="small"
-                      fullWidth
-                      value={nextStatus}
-                      onChange={(e) => setNextStatus(e.target.value)}
-                      disabled={busy}
-                      helperText="فقط مراحل مجاز نمایش داده می‌شوند"
-                    >
-                      {allowedNext.map((k) => (
-                        <MenuItem key={k} value={k}>
-                          {STATUS_LABEL[k]}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                    {allowedNext.length === 0 ? (
+                      <Typography variant="body2" color="text.secondary">
+                        این گزارش مختومه است و قابل تغییر نیست.
+                      </Typography>
+                    ) : (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <TextField
+                          select
+                          label="انتقال به وضعیت بعدی"
+                          size="small"
+                          fullWidth
+                          value={nextStatus}
+                          onChange={(e) => setNextStatus(e.target.value)}
+                          disabled={busy}
+                          helperText="فقط مراحل مجاز نمایش داده می‌شوند"
+                        >
+                          {allowedNext.map((k) => (
+                            <MenuItem key={k} value={k}>
+                              {STATUS_LABEL[k]}
+                            </MenuItem>
+                          ))}
+                        </TextField>
 
-                    {nextStatus === 'RESOLVED' && (
-                      <Box>
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
-                          تصویر بعد (الزامی برای وضعیت حل‌شده):
-                        </Typography>
-                        <Button variant="outlined" component="label" size="small" fullWidth>
-                          {afterFile ? afterFile.name : 'انتخاب تصویر…'}
-                          <input
-                            hidden
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setAfterFile(e.target.files?.[0] || null)}
-                          />
+                        {nextStatus === 'RESOLVED' && !selected.properties?.image_after && (
+                          <Box>
+                            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                              تصویر بعد (الزامی برای وضعیت حل‌شده):
+                            </Typography>
+                            <Button variant="outlined" component="label" size="small" fullWidth>
+                              {afterFile ? afterFile.name : 'انتخاب تصویر…'}
+                              <input
+                                hidden
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setAfterFile(e.target.files?.[0] || null)}
+                              />
+                            </Button>
+                          </Box>
+                        )}
+
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          onClick={handleStatusChange}
+                          disabled={
+                            busy ||
+                            !nextStatus ||
+                            (nextStatus === 'RESOLVED' && !afterFile && !selected.properties?.image_after)
+                          }
+                          startIcon={busy ? <CircularProgress size={16} color="inherit" /> : <CheckCircle2 size={16} />}
+                        >
+                          ثبت تغییر وضعیت
                         </Button>
                       </Box>
                     )}
-
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      onClick={handleStatusChange}
-                      disabled={busy || !nextStatus || (nextStatus === 'RESOLVED' && !afterFile)}
-                      startIcon={busy ? <CircularProgress size={16} color="inherit" /> : <CheckCircle2 size={16} />}
-                    >
-                      ثبت تغییر وضعیت
-                    </Button>
-                  </Box>
-                )}
                   </Grid>
                 </Grid>
               </Card>
@@ -966,7 +1103,7 @@ export default function Dashboard() {
         </Grid>
 
         {/* Extended analytics */}
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }} ref={analyticsRef}>
           <Grid item xs={12} md={7}>
             <Card sx={{ p: 2.5, height: '100%' }}>
               <Typography
@@ -976,28 +1113,32 @@ export default function Dashboard() {
                 <Activity size={18} /> روند ثبت گزارش‌ها در زمان
               </Typography>
               <Box sx={{ height: 280 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={timeSeries}>
-                    <defs>
-                      <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#6366f1" stopOpacity={0.6} />
-                        <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: muiTheme.palette.text.secondary }} />
-                    <YAxis allowDecimals={false} tick={{ fill: muiTheme.palette.text.secondary }} />
-                    <Tooltip contentStyle={tooltipStyle} />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      name="گزارش‌ها"
-                      stroke="#6366f1"
-                      strokeWidth={2}
-                      fill="url(#areaFill)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {timeSeries.length === 0 ? (
+                  <ChartEmpty label="داده‌ای برای نمایش نیست" />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={timeSeries}>
+                      <defs>
+                        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#f2a20d" stopOpacity={0.55} />
+                          <stop offset="100%" stopColor="#f2a20d" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: muiTheme.palette.text.secondary }} />
+                      <YAxis allowDecimals={false} tick={{ fill: muiTheme.palette.text.secondary }} />
+                      <Tooltip contentStyle={tooltipStyle} />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        name="گزارش‌ها"
+                        stroke="#f2a20d"
+                        strokeWidth={2}
+                        fill="url(#areaFill)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
               </Box>
             </Card>
           </Grid>
@@ -1011,20 +1152,24 @@ export default function Dashboard() {
                 <BarChart3 size={18} /> گزارش‌ها بر اساس دسته‌بندی
               </Typography>
               <Box sx={{ height: 280 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={categoryData} layout="vertical" margin={{ left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} horizontal={false} />
-                    <XAxis type="number" allowDecimals={false} tick={{ fill: muiTheme.palette.text.secondary }} />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      width={100}
-                      tick={{ fontSize: 11, fill: muiTheme.palette.text.secondary }}
-                    />
-                    <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(99,102,241,0.08)' }} />
-                    <Bar dataKey="value" name="تعداد" fill="#06b6d4" radius={[0, 8, 8, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                {categoryData.length === 0 ? (
+                  <ChartEmpty label="داده‌ای برای نمایش نیست" />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={categoryData} layout="vertical" margin={{ left: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} horizontal={false} />
+                      <XAxis type="number" allowDecimals={false} tick={{ fill: muiTheme.palette.text.secondary }} />
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        width={100}
+                        tick={{ fontSize: 11, fill: muiTheme.palette.text.secondary }}
+                      />
+                      <Tooltip contentStyle={tooltipStyle} cursor={{ fill: cursorFill }} />
+                      <Bar dataKey="value" name="تعداد" fill="#0ea5e9" radius={[0, 8, 8, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </Box>
             </Card>
           </Grid>

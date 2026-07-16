@@ -11,7 +11,7 @@ import {
   InputAdornment,
   IconButton,
 } from '@mui/material'
-import { LogIn, User, Lock, ShieldCheck, Sun, Moon, MapPin, Eye, EyeOff } from 'lucide-react'
+import { LogIn, User, Lock, ShieldCheck, Sun, Moon, Eye, EyeOff } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { api, loginTokens } from '../api/client'
 import toast from 'react-hot-toast'
@@ -72,32 +72,29 @@ export default function LoginPage() {
         >
           <Paper elevation={0} sx={{ p: 4, borderRadius: 5 }}>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <Box
-                sx={{
-                  width: 60,
-                  height: 60,
-                  mx: 'auto',
-                  mb: 2,
-                  borderRadius: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                  boxShadow: '0 12px 30px -8px rgba(99,102,241,0.6)',
-                }}
-              >
-                <MapPin size={30} />
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Box
+                  component="svg"
+                  viewBox="0 0 48 48"
+                  sx={{ width: 60, height: 60, filter: 'drop-shadow(0 10px 20px rgba(242,162,13,0.45))' }}
+                >
+                  <circle cx="24" cy="19" r="15" fill="none" stroke="#f2a20d" strokeWidth="1.6" opacity="0.4" />
+                  <path
+                    d="M24 6c-6.2 0-11 4.7-11 10.7 0 7.6 9.4 17.4 10.4 18.4a.9.9 0 0 0 1.3 0C25.6 34.1 35 24.3 35 16.7 35 10.7 30.2 6 24 6Z"
+                    fill="#f9b526"
+                  />
+                  <circle cx="24" cy="16.4" r="4.4" fill="#0b1220" />
+                  <circle cx="24" cy="16.4" r="1.9" fill="#34d399" />
+                </Box>
               </Box>
               <Typography
                 variant="overline"
-                color="primary"
-                sx={{ fontWeight: 'bold', letterSpacing: 2 }}
+                sx={{ fontWeight: 'bold', letterSpacing: 2, color: 'primary.main', fontFamily: '"Space Grotesk", sans-serif' }}
               >
                 UrbanHelper Admin
               </Typography>
               <Typography variant="h4" component="h1" sx={{ mt: 0.5, fontWeight: 900 }}>
-                پنل مدیریت هوشمند
+                داشبورد عملیاتی
               </Typography>
             </Box>
 

@@ -1,18 +1,24 @@
 import { createTheme, alpha } from '@mui/material/styles'
 
-const BRAND = '#6366f1' // indigo-500 (aurora anchor)
-const BRAND_DARK = '#4f46e5'
-const ACCENT = '#06b6d4' // cyan-500
+// ── "Civic Signal" palette (shared with citizen + mobile) ──────────────
+const BEACON = '#f2a20d' // amber — primary signal / attention
+const BEACON_LIGHT = '#f9b526'
+const BEACON_DARK = '#d67f04'
+const CIVIC = '#10b981' // emerald — resolved / service / success
+const SKY = '#0ea5e9' // info / in-progress
+const CORAL = '#f43f5e' // urgent / error
+const INK = '#0b1220'
 
 /**
- * Build the Aurora-Glass MUI theme for the given mode ('light' | 'dark').
- * Surfaces are translucent + blurred so the aurora background shows through.
+ * Build the "Civic Signal" MUI theme for the given mode ('light' | 'dark').
+ * Solid, confident, data-dense surfaces (light blur, high opacity) so charts
+ * and tables stay legible over the ambient background.
  */
 export function createAppTheme(mode = 'dark') {
   const isDark = mode === 'dark'
 
-  const paperBg = isDark ? alpha('#0f172a', 0.6) : alpha('#ffffff', 0.7)
-  const borderColor = isDark ? alpha('#ffffff', 0.1) : alpha('#1e293b', 0.08)
+  const paperBg = isDark ? alpha('#101a2e', 0.82) : alpha('#ffffff', 0.9)
+  const borderColor = isDark ? alpha('#ffffff', 0.09) : alpha('#1e293b', 0.09)
 
   return createTheme({
     direction: 'rtl',
@@ -23,20 +29,24 @@ export function createAppTheme(mode = 'dark') {
       h6: { fontWeight: 800 },
       button: { fontWeight: 700 },
     },
-    shape: { borderRadius: 16 },
+    shape: { borderRadius: 14 },
     palette: {
       mode,
-      primary: { main: BRAND, dark: BRAND_DARK },
-      secondary: { main: '#10b981' },
-      info: { main: ACCENT },
+      primary: { main: BEACON, light: BEACON_LIGHT, dark: BEACON_DARK, contrastText: INK },
+      secondary: { main: CIVIC, contrastText: '#ffffff' },
+      info: { main: SKY, contrastText: '#ffffff' },
       warning: { main: '#f59e0b' },
-      error: { main: '#f43f5e' },
-      success: { main: '#10b981' },
+      error: { main: CORAL },
+      success: { main: CIVIC },
       background: {
-        default: isDark ? '#070b1a' : '#eef2ff',
-        paper: isDark ? '#0f172a' : '#ffffff',
+        default: isDark ? '#0b1220' : '#f4f6fa',
+        paper: isDark ? '#101a2e' : '#ffffff',
       },
       divider: borderColor,
+      text: {
+        primary: isDark ? '#e8edf6' : '#0b1220',
+        secondary: isDark ? '#94a3b8' : '#64748b',
+      },
     },
     components: {
       MuiCssBaseline: {
@@ -47,6 +57,7 @@ export function createAppTheme(mode = 'dark') {
             borderRadius: 8,
             background: isDark ? alpha('#ffffff', 0.12) : alpha('#1e293b', 0.18),
           },
+          '::-webkit-scrollbar-thumb:hover': { background: alpha(BEACON, 0.6) },
         },
       },
       MuiPaper: {
@@ -54,7 +65,7 @@ export function createAppTheme(mode = 'dark') {
           root: {
             backgroundImage: 'none',
             backgroundColor: paperBg,
-            backdropFilter: 'blur(18px)',
+            backdropFilter: 'blur(12px)',
             border: `1px solid ${borderColor}`,
           },
         },
@@ -62,24 +73,25 @@ export function createAppTheme(mode = 'dark') {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 22,
+            borderRadius: 18,
             backgroundImage: 'none',
             backgroundColor: paperBg,
-            backdropFilter: 'blur(18px)',
+            backdropFilter: 'blur(12px)',
             border: `1px solid ${borderColor}`,
             boxShadow: isDark
-              ? '0 18px 50px -18px rgba(0,0,0,0.7)'
-              : '0 18px 50px -22px rgba(79,70,229,0.25)',
+              ? '0 20px 50px -28px rgba(0,0,0,0.8)'
+              : '0 16px 40px -24px rgba(15,23,42,0.22)',
           },
         },
       },
       MuiButton: {
         defaultProps: { disableElevation: true },
         styleOverrides: {
-          root: { borderRadius: 14, textTransform: 'none', fontWeight: 700 },
+          root: { borderRadius: 12, textTransform: 'none', fontWeight: 700 },
           containedPrimary: {
-            background: `linear-gradient(135deg, ${BRAND} 0%, ${ACCENT} 120%)`,
-            boxShadow: '0 10px 30px -10px rgba(99,102,241,0.6)',
+            background: `linear-gradient(120deg, ${BEACON_LIGHT} 0%, ${BEACON} 60%, ${BEACON_DARK} 100%)`,
+            color: INK,
+            boxShadow: '0 10px 26px -10px rgba(242,162,13,0.6)',
           },
         },
       },
@@ -87,8 +99,8 @@ export function createAppTheme(mode = 'dark') {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
-            backgroundColor: isDark ? alpha('#0b1020', 0.55) : alpha('#ffffff', 0.6),
-            backdropFilter: 'blur(18px)',
+            backgroundColor: isDark ? alpha('#0b1220', 0.7) : alpha('#ffffff', 0.75),
+            backdropFilter: 'blur(12px)',
             borderBottom: `1px solid ${borderColor}`,
             boxShadow: 'none',
           },
@@ -98,8 +110,8 @@ export function createAppTheme(mode = 'dark') {
         styleOverrides: {
           paper: {
             backgroundImage: 'none',
-            backgroundColor: isDark ? alpha('#0b1020', 0.55) : alpha('#ffffff', 0.65),
-            backdropFilter: 'blur(18px)',
+            backgroundColor: isDark ? alpha('#0b1220', 0.72) : alpha('#ffffff', 0.82),
+            backdropFilter: 'blur(12px)',
             border: 'none',
             borderLeft: `1px solid ${borderColor}`,
           },
@@ -108,10 +120,10 @@ export function createAppTheme(mode = 'dark') {
       MuiListItemButton: {
         styleOverrides: {
           root: {
-            borderRadius: 14,
+            borderRadius: 12,
             '&.Mui-selected': {
-              backgroundColor: alpha(BRAND, 0.16),
-              '&:hover': { backgroundColor: alpha(BRAND, 0.22) },
+              backgroundColor: alpha(BEACON, 0.16),
+              '&:hover': { backgroundColor: alpha(BEACON, 0.24) },
             },
           },
         },
@@ -122,9 +134,14 @@ export function createAppTheme(mode = 'dark') {
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            borderRadius: 14,
+            borderRadius: 12,
             backgroundColor: isDark ? alpha('#ffffff', 0.04) : alpha('#ffffff', 0.7),
           },
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: { fontFamily: 'Vazirmatn, system-ui, sans-serif', fontWeight: 600 },
         },
       },
     },
