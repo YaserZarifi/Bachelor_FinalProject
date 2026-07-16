@@ -16,7 +16,6 @@ import { fetchReport } from '../../src/api/reports';
 import { mediaUrl } from '../../src/api/client';
 import { getGuestToken, updateGuestStatus } from '../../src/api/guestStore';
 import { useReportSocket } from '../../src/hooks/useReportSocket';
-import { presentLocal } from '../../src/notifications/registerPush';
 import { STATUS_LABEL } from '../../src/constants/status';
 import { colors, fonts, radius } from '../../src/theme';
 
@@ -60,12 +59,8 @@ export default function ReportDetail() {
       );
       await updateGuestStatus(reportId, data.status);
       const label = STATUS_LABEL[data.status] || data.status;
+      // In-app toast only (no OS banner while the screen is open).
       setToast(`وضعیت به‌روز شد: ${label}`);
-      // Foreground local alert (push covers background/closed).
-      presentLocal('به‌روزرسانی وضعیت گزارش', `گزارش #${reportId} اکنون «${label}» است.`, {
-        report_id: reportId,
-        status: data.status,
-      });
     },
     [reportId]
   );
@@ -159,7 +154,14 @@ export default function ReportDetail() {
           <View style={{ height: 40 }} />
         </ScrollView>
 
-        {toast && <Toast message={toast} onHide={() => setToast(null)} />}
+        {toast && (
+          <Toast
+            message={toast}
+            iconName="checkmark-circle"
+            iconColor={colors.civic[400]}
+            onHide={() => setToast(null)}
+          />
+        )}
       </SafeAreaView>
     </AuroraBackground>
   );
