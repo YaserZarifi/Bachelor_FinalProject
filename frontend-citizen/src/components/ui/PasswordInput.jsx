@@ -19,7 +19,7 @@ export function PasswordInput({ className = '', ...props }) {
         onClick={() => setShow((v) => !v)}
         aria-label={show ? 'پنهان کردن رمز' : 'نمایش رمز'}
         title={show ? 'پنهان کردن رمز' : 'نمایش رمز'}
-        className="absolute inset-y-0 left-3 flex items-center text-slate-400 transition hover:text-brand-500"
+        className="absolute inset-y-0 left-3 flex items-center text-slate-400 transition hover:text-beacon-500"
       >
         {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
       </button>

@@ -87,10 +87,10 @@ export function EmergencyCenters() {
   const me = geo.coords
 
   return (
-    <div className="glass p-5">
-      <div className="flex items-center justify-between gap-3">
-        <p className="inline-flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-500">
+    <div className="card p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="inline-flex items-center gap-2 font-bold text-ink-900 dark:text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-coral-500/15 text-coral-500">
             <Navigation className="h-5 w-5" />
           </span>
           مراکز حیاتی نزدیک شما
@@ -99,7 +99,7 @@ export function EmergencyCenters() {
           type="button"
           onClick={locateAndLoad}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-l from-rose-600 to-rose-500 px-4 py-2 text-xs font-bold text-white shadow-lg transition hover:-translate-y-0.5 disabled:opacity-50"
+          className="btn-coral btn-sm"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
           {loading ? 'در حال یافتن…' : 'یافتن نزدیک‌ترین مراکز'}
@@ -107,14 +107,14 @@ export function EmergencyCenters() {
       </div>
 
       {error && (
-        <div className="mt-3 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-600 dark:text-rose-300">
+        <div className="mt-3 rounded-xl border border-coral-400/30 bg-coral-500/10 px-4 py-3 text-sm text-coral-600 dark:text-coral-300">
           {error}
         </div>
       )}
 
       {me && centers && (
         <>
-          <div className="mt-3 h-64 overflow-hidden rounded-3xl border border-white/50 dark:border-white/10">
+          <div className="mt-3 h-64 overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
             <MapContainer
               key={`${me.lat},${me.lng}`}
               center={[me.lat, me.lng]}
@@ -148,7 +148,7 @@ export function EmergencyCenters() {
               {centers.slice(0, 5).map((c) => (
                 <li
                   key={c.id}
-                  className="flex items-center justify-between rounded-2xl border border-white/40 bg-white/50 px-3 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
+                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm dark:border-white/10 dark:bg-white/[0.04]"
                 >
                   <span className="inline-flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
                     <span

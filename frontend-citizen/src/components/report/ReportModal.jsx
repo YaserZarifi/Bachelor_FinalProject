@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { Link } from 'react-router-dom'
@@ -26,7 +27,7 @@ import {
   Lock,
   Loader2,
 } from 'lucide-react'
-import { api } from '../../api/client'
+import { api, saveGuestReport } from '../../api/client'
 import {
   buildReportFormData,
   countPendingReports,
@@ -34,6 +35,7 @@ import {
   syncReports,
 } from '../../api/offline'
 import { CameraCapture } from '../CameraCapture'
+import { BeaconPin } from '../ui/BeaconPin'
 
 const ReportModalContext = createContext({ open: () => {}, close: () => {} })
 
@@ -70,11 +72,11 @@ function Stepper({ step }) {
           <div key={s.key} className="flex items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2">
               <span
-                className={`flex h-9 w-9 items-center justify-center rounded-2xl text-sm font-bold transition ${
+                className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold transition ${
                   done
-                    ? 'bg-emerald-500 text-white'
+                    ? 'bg-civic-500 text-white'
                     : current
-                      ? 'bg-gradient-to-br from-brand-500 to-aurora-violet text-white shadow-glow'
+                      ? 'bg-beacon-400 text-ink-900 shadow-signal'
                       : 'bg-slate-200 text-slate-400 dark:bg-white/10 dark:text-slate-500'
                 }`}
               >
@@ -83,7 +85,7 @@ function Stepper({ step }) {
               <span
                 className={`hidden text-sm font-semibold sm:inline ${
                   current
-                    ? 'text-slate-900 dark:text-white'
+                    ? 'text-ink-900 dark:text-white'
                     : 'text-slate-400 dark:text-slate-500'
                 }`}
               >
@@ -92,8 +94,8 @@ function Stepper({ step }) {
             </div>
             {i < STEPS.length - 1 && (
               <span
-                className={`h-0.5 w-5 rounded-full sm:w-8 ${
-                  i < step ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-white/10'
+                className={`h-0.5 w-5 rounded-full transition-colors sm:w-8 ${
+                  i < step ? 'bg-civic-500' : 'bg-slate-200 dark:bg-white/10'
                 }`}
               />
             )}
@@ -104,7 +106,7 @@ function Stepper({ step }) {
   )
 }
 
-function ReportWizard({ onClose }) {
+function ReportWizard({ onClose, titleId }) {
   const [categories, setCategories] = useState([])
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
@@ -113,9 +115,10 @@ function ReportWizard({ onClose }) {
   const [dir, setDir] = useState(1)
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
+  const [msgTone, setMsgTone] = useState('info') // info | error | success
   const [canSaveOffline, setCanSaveOffline] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
-  const [result, setResult] = useState(null) // { id, guestToken }
+  const [result, setResult] = useState(null) // { id, guestToken } | { offline: true }
   const [copied, setCopied] = useState(false)
 
   const refreshPending = useCallback(async () => {
@@ -135,7 +138,10 @@ function ReportWizard({ onClose }) {
     async function onOnline() {
       const res = await syncReports()
       await refreshPending()
-      if (res.synced) setMsg(`${res.synced} گزارش آفلاین به‌صورت خودکار همگام‌سازی شد.`)
+      if (res.synced) {
+        setMsgTone('success')
+        setMsg(`${res.synced.toLocaleString('fa-IR')} گزارش آفلاین به‌صورت خودکار همگام‌سازی شد.`)
+      }
     }
     window.addEventListener('online', onOnline)
     return () => window.removeEventListener('online', onOnline)
@@ -154,10 +160,12 @@ function ReportWizard({ onClose }) {
 
   async function handleSync() {
     setBusy(true)
+    setMsgTone('info')
     setMsg('در حال همگام‌سازی گزارش‌های آفلاین…')
     const res = await syncReports()
     await refreshPending()
-    setMsg(`همگام‌سازی انجام شد: ${res.synced} موفق، ${res.failed} ناموفق.`)
+    setMsgTone(res.failed ? 'error' : 'success')
+    setMsg(`همگام‌سازی: ${res.synced.toLocaleString('fa-IR')} موفق، ${res.failed.toLocaleString('fa-IR')} ناموفق.`)
     setBusy(false)
   }
 
@@ -173,8 +181,17 @@ function ReportWizard({ onClose }) {
       const token =
         res.data?.properties?.guest_access_token || res.data?.guest_access_token
       const id = res.data?.id || res.data?.properties?.id
+      // Persist so the citizen can track this report later (guest flow).
+      if (id) {
+        saveGuestReport({
+          id,
+          token: token || null,
+          description: description.slice(0, 120),
+        })
+      }
       setResult({ id, guestToken: token })
     } catch {
+      setMsgTone('error')
       setMsg('ارسال گزارش ناموفق بود. می‌توانید آن را برای ارسال خودکار هنگام اتصال ذخیره کنید.')
       setCanSaveOffline(true)
     } finally {
@@ -189,6 +206,7 @@ function ReportWizard({ onClose }) {
       setResult({ offline: true })
       await refreshPending()
     } catch {
+      setMsgTone('error')
       setMsg('خطا در ذخیره‌سازی آفلاین.')
     } finally {
       setBusy(false)
@@ -226,32 +244,32 @@ function ReportWizard({ onClose }) {
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 220, damping: 16 }}
-          className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500/20 text-emerald-500"
+          className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-civic-500/15 text-civic-500"
         >
           <CheckCircle2 className="h-9 w-9" />
         </motion.div>
-        <h3 className="font-display text-2xl font-black text-slate-900 dark:text-white">
+        <h3 className="font-display text-2xl font-black text-ink-900 dark:text-white">
           {result.offline ? 'گزارش آفلاین ذخیره شد' : 'گزارش با موفقیت ثبت شد'}
         </h3>
         <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           {result.offline
             ? 'به‌محض اتصال به اینترنت، گزارش شما به‌صورت خودکار ارسال می‌شود.'
-            : 'توکن پیگیری مهمان را نگه دارید تا وضعیت رسیدگی را به‌صورت زنده دنبال کنید.'}
+            : 'این گزارش به فهرست پیگیری شما افزوده شد. برای دنبال‌کردن زندهٔ وضعیت، توکن مهمان را نیز نگه دارید.'}
         </p>
 
         {!result.offline && result.guestToken && (
-          <div className="mx-auto mt-6 max-w-sm rounded-3xl border border-white/50 bg-white/70 p-4 text-right dark:border-white/10 dark:bg-white/5">
+          <div className="card-inset mx-auto mt-6 max-w-sm p-4 text-right">
             <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               توکن پیگیری مهمان:
             </p>
             <div className="mt-2 flex items-center gap-2">
-              <code className="flex-1 select-all break-all rounded-xl bg-slate-900/90 px-3 py-2 text-left font-mono text-xs text-emerald-300">
+              <code className="flex-1 select-all break-all rounded-lg bg-ink-900 px-3 py-2 text-left font-mono text-xs text-civic-300">
                 {result.guestToken}
               </code>
               <button
                 type="button"
                 onClick={copyToken}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white transition hover:bg-emerald-600"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-civic-500 text-white transition hover:bg-civic-400"
                 aria-label="کپی توکن"
               >
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -274,17 +292,18 @@ function ReportWizard({ onClose }) {
   }
 
   return (
-    <div className="flex max-h-[88vh] flex-col">
+    <div className="flex max-h-[90vh] flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200/70 px-5 py-4 dark:border-white/10">
-        <h3 className="font-display text-lg font-black text-slate-900 dark:text-white">
-          ثبت گزارش معضل شهری
+        <h3 id={titleId} className="flex items-center gap-2 font-display text-lg font-black text-ink-900 dark:text-white">
+          <BeaconPin size={26} />
+          ثبت گزارش شهری
         </h3>
         <button
           type="button"
           onClick={onClose}
           aria-label="بستن"
-          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white/60 text-slate-500 transition hover:text-rose-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-coral-300 hover:text-coral-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300"
         >
           <X className="h-5 w-5" />
         </button>
@@ -298,15 +317,15 @@ function ReportWizard({ onClose }) {
       {/* Body */}
       <div className="flex-1 overflow-y-auto px-5 pb-2">
         {pendingCount > 0 && (
-          <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-brand-400/30 bg-brand-500/10 p-3">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold text-brand-700 dark:text-brand-200">
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-beacon-400/30 bg-beacon-400/10 p-3">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-beacon-800 dark:text-beacon-200">
               <CloudUpload className="h-4 w-4" />
               {pendingCount.toLocaleString('fa-IR')} گزارش آمادهٔ همگام‌سازی
             </span>
             <button
               onClick={handleSync}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+              className="btn-primary btn-sm"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               همگام‌سازی
@@ -341,7 +360,7 @@ function ReportWizard({ onClose }) {
               <div className="space-y-5 pb-2">
                 <div>
                   <label className="label inline-flex items-center gap-1.5">
-                    <Tag className="h-4 w-4 text-brand-500" />
+                    <Tag className="h-4 w-4 text-beacon-500" />
                     نوع مشکل
                   </label>
                   <select
@@ -359,7 +378,7 @@ function ReportWizard({ onClose }) {
                 </div>
                 <div>
                   <label className="label inline-flex items-center gap-1.5">
-                    <FileText className="h-4 w-4 text-brand-500" />
+                    <FileText className="h-4 w-4 text-beacon-500" />
                     توضیحات
                   </label>
                   <textarea
@@ -369,6 +388,9 @@ function ReportWizard({ onClose }) {
                     className="input resize-none"
                     placeholder="شرح دقیق مشکل را بنویسید…"
                   />
+                  <p className="mt-1.5 text-xs text-slate-400">
+                    {description.trim().length.toLocaleString('fa-IR')} نویسه
+                  </p>
                 </div>
               </div>
             )}
@@ -376,34 +398,34 @@ function ReportWizard({ onClose }) {
             {step === 2 && (
               <div className="space-y-4 pb-2">
                 {capture && (
-                  <div className="overflow-hidden rounded-3xl border border-white/50 dark:border-white/10">
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
                     <img
                       src={capture.previewUrl}
-                      alt="پیش‌نمایش"
+                      alt="پیش‌نمایش تصویر ثبت‌شده"
                       className="h-44 w-full object-cover"
                     />
                   </div>
                 )}
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/50 bg-white/50 p-3 dark:border-white/10 dark:bg-white/5">
+                  <div className="card-inset p-3">
                     <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">نوع مشکل</p>
-                    <p className="mt-1 font-bold text-slate-900 dark:text-white">
+                    <p className="mt-1 font-bold text-ink-900 dark:text-white">
                       {categoryName || 'تشخیص خودکار با هوش مصنوعی'}
                     </p>
                   </div>
                   {capture && (
-                    <div className="rounded-2xl border border-white/50 bg-white/50 p-3 dark:border-white/10 dark:bg-white/5">
+                    <div className="card-inset p-3">
                       <p className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        <Lock className="h-3.5 w-3.5 text-emerald-500" /> موقعیت قفل‌شده
+                        <Lock className="h-3.5 w-3.5 text-civic-500" /> موقعیت قفل‌شده
                       </p>
-                      <p className="mt-1 inline-flex items-center gap-1 font-bold text-slate-900 dark:text-white">
-                        <MapPin className="h-4 w-4 text-brand-500" />
-                        دقت ±{Math.round(capture.accuracy)} متر
+                      <p className="mt-1 inline-flex items-center gap-1 font-bold text-ink-900 dark:text-white">
+                        <MapPin className="h-4 w-4 text-beacon-500" />
+                        دقت ±{Math.round(capture.accuracy).toLocaleString('fa-IR')} متر
                       </p>
                     </div>
                   )}
                 </div>
-                <div className="rounded-2xl border border-white/50 bg-white/50 p-3 dark:border-white/10 dark:bg-white/5">
+                <div className="card-inset p-3">
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">توضیحات</p>
                   <p className="mt-1 leading-relaxed text-slate-800 dark:text-slate-200">
                     {description}
@@ -415,13 +437,21 @@ function ReportWizard({ onClose }) {
         </AnimatePresence>
 
         {msg && (
-          <div className="mt-3 rounded-2xl border border-slate-200/70 bg-white/60 px-4 py-3 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+          <div
+            className={`mt-3 rounded-xl border px-4 py-3 text-sm ${
+              msgTone === 'error'
+                ? 'border-coral-400/30 bg-coral-500/10 text-coral-700 dark:text-coral-300'
+                : msgTone === 'success'
+                  ? 'border-civic-400/30 bg-civic-500/10 text-civic-700 dark:text-civic-300'
+                  : 'border-slate-200/70 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-200'
+            }`}
+          >
             {msg}
             {canSaveOffline && capture && (
               <button
                 type="button"
                 onClick={saveOffline}
-                className="mt-2 inline-flex items-center gap-1.5 font-bold text-brand-600 underline dark:text-brand-300"
+                className="mt-2 inline-flex items-center gap-1.5 font-bold text-beacon-600 underline dark:text-beacon-300"
               >
                 <CloudUpload className="h-4 w-4" />
                 ذخیرهٔ آفلاین گزارش
@@ -434,7 +464,7 @@ function ReportWizard({ onClose }) {
       {/* Footer nav */}
       <div className="flex items-center justify-between gap-3 border-t border-slate-200/70 px-5 py-4 dark:border-white/10">
         {step > 0 ? (
-          <button type="button" onClick={() => go(step - 1)} className="btn-ghost px-5 py-2.5">
+          <button type="button" onClick={() => go(step - 1)} className="btn-ghost btn-sm">
             <ArrowRight className="h-4 w-4" />
             قبلی
           </button>
@@ -447,13 +477,13 @@ function ReportWizard({ onClose }) {
             type="button"
             onClick={() => canNext && go(step + 1)}
             disabled={!canNext}
-            className="btn-primary px-6 py-2.5"
+            className="btn-primary btn-sm"
           >
             بعدی
             <ArrowLeft className="h-4 w-4" />
           </button>
         ) : (
-          <button type="button" onClick={submit} disabled={busy} className="btn-primary px-6 py-2.5">
+          <button type="button" onClick={submit} disabled={busy} className="btn-signal btn-sm">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             {busy ? 'در حال ارسال…' : 'ثبت گزارش'}
           </button>
@@ -465,6 +495,8 @@ function ReportWizard({ onClose }) {
 
 export function ReportModalProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false)
+  const panelRef = useRef(null)
+  const titleId = 'report-modal-title'
   const open = useCallback(() => setIsOpen(true), [])
   const close = useCallback(() => setIsOpen(false), [])
   const value = useMemo(() => ({ open, close, isOpen }), [open, close, isOpen])
@@ -476,9 +508,12 @@ export function ReportModalProvider({ children }) {
     document.body.style.overflow = 'hidden'
     const onKey = (e) => e.key === 'Escape' && close()
     window.addEventListener('keydown', onKey)
+    // Move focus into the dialog for keyboard + screen-reader users.
+    const t = setTimeout(() => panelRef.current?.focus(), 60)
     return () => {
       document.body.style.overflow = prev
       window.removeEventListener('keydown', onKey)
+      clearTimeout(t)
     }
   }, [isOpen, close])
 
@@ -494,21 +529,24 @@ export function ReportModalProvider({ children }) {
             exit={{ opacity: 0 }}
           >
             <div
-              className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-ink-950/60 backdrop-blur-sm"
               onClick={close}
               aria-hidden="true"
             />
             <motion.div
+              ref={panelRef}
+              tabIndex={-1}
               role="dialog"
               aria-modal="true"
+              aria-labelledby={titleId}
               variants={panelVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="glass-strong relative z-10 w-full max-w-lg overflow-hidden rounded-b-none rounded-t-4xl sm:rounded-4xl"
+              className="card-raised relative z-10 w-full max-w-lg overflow-hidden rounded-b-none rounded-t-4xl outline-none sm:rounded-4xl"
             >
-              <ReportWizard onClose={close} />
+              <ReportWizard onClose={close} titleId={titleId} />
             </motion.div>
           </motion.div>
         )}

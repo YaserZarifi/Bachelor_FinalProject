@@ -6,7 +6,7 @@ import { RegisterPage } from './pages/Register.jsx'
 import { MyReports } from './pages/MyReports.jsx'
 import { Navbar } from './components/Navbar.jsx'
 import { Footer } from './components/Footer.jsx'
-import { AuroraBackground } from './components/ui/AuroraBackground.jsx'
+import { CivicBackground } from './components/ui/CivicBackground.jsx'
 import { ReportModalProvider } from './components/report/ReportModal.jsx'
 
 function Page({ children }) {
@@ -27,7 +27,7 @@ export default function App() {
   return (
     <ReportModalProvider>
       <div className="relative flex min-h-screen flex-col">
-        <AuroraBackground />
+        <CivicBackground />
         <Navbar />
         <main className="flex-1">
           <AnimatePresence mode="wait">
