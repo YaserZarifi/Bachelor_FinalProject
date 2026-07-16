@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   شهریاور — "Civic Signal" design system
+   Confident, high-contrast civic surfaces. Amber = signal,
+   emerald = resolved, coral = urgent. Dark mode is the hero.
+   ============================================================ */
+
 @layer base {
   html,
   body,
@@ -9,8 +15,32 @@
     min-height: 100%;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-500 dark:bg-ink dark:text-slate-100;
+    @apply bg-[#f4f6fa] text-ink-900 antialiased transition-colors duration-500
+           dark:bg-ink-900 dark:text-slate-100;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+
+  /* Latin numerals + code render in Space Grotesk with tabular figures */
+  .tnum {
+    font-family: '"Space Grotesk"', 'Vazirmatn', system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Visible keyboard focus everywhere, on-brand */
+  :focus-visible {
+    @apply outline-none ring-4 ring-beacon-400/45 ring-offset-2
+           ring-offset-[#f4f6fa] dark:ring-offset-ink-900;
+    border-radius: 0.5rem;
+  }
+
+  ::selection {
+    @apply bg-beacon-400/30 text-ink-900 dark:text-white;
   }
 
   /* Themed scrollbar */
@@ -22,70 +52,137 @@
     @apply rounded-full bg-slate-300/70 dark:bg-white/10;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-brand-400/70;
+    @apply bg-beacon-400/70;
   }
 }
 
 @layer components {
-  /* Frosted glass surfaces */
-  .glass {
-    @apply rounded-4xl border border-white/50 bg-white/60 shadow-glass backdrop-blur-xl
-           dark:border-white/10 dark:bg-white/[0.045] dark:shadow-glass-dark;
+  /* ── Surfaces: solid, confident cards (depth via elevation, not blur) ── */
+  .card {
+    @apply rounded-3xl border border-slate-200/80 bg-white shadow-card
+           dark:border-white/[0.08] dark:bg-ink-850 dark:shadow-card-dark;
   }
-  .glass-strong {
-    @apply rounded-4xl border border-white/60 bg-white/80 shadow-glass backdrop-blur-2xl
-           dark:border-white/10 dark:bg-slate-900/70 dark:shadow-glass-dark;
+  .card-raised {
+    @apply rounded-3xl border border-slate-200/70 bg-white shadow-lift
+           dark:border-white/10 dark:bg-ink-800 dark:shadow-card-dark;
+  }
+  .card-inset {
+    @apply rounded-2xl border border-slate-200/70 bg-slate-50
+           dark:border-white/[0.06] dark:bg-ink-900/60;
   }
 
-  /* Buttons */
+  /* Signage-style eyebrow / kicker */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em]
+           text-slate-500 dark:text-slate-400;
+  }
+
+  /* ── Buttons ── */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl font-bold
-           transition-all duration-300 disabled:pointer-events-none disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl font-bold
+           transition-all duration-200 disabled:pointer-events-none disabled:opacity-55
+           focus-visible:ring-offset-2;
+    min-height: 44px;
   }
+  /* Beacon — the single hero "report a problem" action */
+  .btn-signal {
+    @apply btn bg-beacon-400 px-6 text-ink-900 shadow-signal
+           hover:bg-beacon-300 hover:shadow-signal-lg active:scale-[0.98];
+  }
+  /* Default confident neutral */
   .btn-primary {
-    @apply btn bg-gradient-to-l from-brand-600 to-brand-400 px-6 py-3 text-white
-           shadow-glow hover:-translate-y-0.5 hover:shadow-glow-lg;
+    @apply btn bg-ink-900 px-6 text-white shadow-card hover:bg-ink-800 active:scale-[0.98]
+           dark:bg-white dark:text-ink-900 dark:hover:bg-slate-100;
   }
-  .btn-emerald {
-    @apply btn bg-gradient-to-l from-emerald-600 to-emerald-400 px-6 py-3 text-white
-           shadow-glow-emerald hover:-translate-y-0.5;
+  .btn-civic {
+    @apply btn bg-civic-500 px-6 text-white shadow-civic hover:bg-civic-400 active:scale-[0.98];
+  }
+  .btn-coral {
+    @apply btn bg-coral-500 px-6 text-white shadow-coral hover:bg-coral-400 active:scale-[0.98];
   }
   .btn-ghost {
-    @apply btn border border-slate-200 bg-white/70 px-6 py-3 text-slate-700 backdrop-blur
-           hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10;
+    @apply btn border border-slate-200 bg-white px-6 text-slate-700
+           hover:border-slate-300 hover:bg-slate-50
+           dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-200 dark:hover:bg-white/[0.07];
+  }
+  .btn-sm {
+    @apply rounded-lg px-4 text-sm;
+    min-height: 38px;
+  }
+  .btn-lg {
+    @apply rounded-2xl px-8 text-lg;
+    min-height: 54px;
   }
 
-  /* Form controls */
+  /* ── Form controls ── */
   .label {
-    @apply mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300;
+    @apply mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300;
   }
   .input {
-    @apply w-full rounded-2xl border border-slate-200/90 bg-white/70 px-4 py-3 text-slate-900
+    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-ink-900
            outline-none transition placeholder:text-slate-400
-           focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15
-           dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500;
+           focus:border-beacon-400 focus:ring-4 focus:ring-beacon-400/20
+           dark:border-white/10 dark:bg-ink-900/70 dark:text-white dark:placeholder:text-slate-500;
+    min-height: 48px;
+  }
+  textarea.input {
+    min-height: 96px;
   }
 
+  /* Status / meta chips */
   .chip {
     @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold;
   }
 
   /* Gradient display text */
-  .text-aurora {
-    @apply bg-aurora-text bg-clip-text text-transparent;
+  .text-signal {
+    @apply bg-signal-text bg-clip-text text-transparent;
+  }
+  .text-civic-grad {
+    @apply bg-civic-text bg-clip-text text-transparent;
   }
 
-  /* Aurora animated background blobs */
-  .aurora-bg {
-    @apply pointer-events-none fixed inset-0 -z-10 overflow-hidden;
+  /* Loading skeleton block */
+  .skeleton {
+    @apply relative overflow-hidden rounded-xl bg-slate-200/70 dark:bg-white/[0.06];
   }
-  .aurora-blob {
-    @apply absolute rounded-full blur-3xl;
-    will-change: transform;
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+  .dark .skeleton::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.07),
+      transparent
+    );
   }
 }
 
-/* Calm everything down for users who prefer reduced motion */
+@layer utilities {
+  /* Faint wayfinding map-grid texture */
+  .map-grid {
+    background-image:
+      linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .dark .map-grid {
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  }
+}
+
+/* Calm everything for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,
@@ -102,11 +199,16 @@
   font-family: 'Vazirmatn', system-ui, sans-serif;
   background: transparent;
 }
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  @apply bg-white text-ink-900 dark:bg-ink-800 dark:text-slate-100;
+}
 .dark .leaflet-tile {
-  filter: brightness(0.7) invert(1) contrast(0.9) hue-rotate(200deg) saturate(0.7);
+  filter: brightness(0.72) invert(1) contrast(0.92) hue-rotate(190deg)
+    saturate(0.75);
 }
 .dark .leaflet-control-attribution {
-  background: rgba(15, 23, 42, 0.7) !important;
+  background: rgba(11, 18, 32, 0.72) !important;
   color: #94a3b8 !important;
 }
 .dark .leaflet-control-attribution a {

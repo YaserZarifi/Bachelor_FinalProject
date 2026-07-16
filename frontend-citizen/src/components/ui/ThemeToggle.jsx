@@ -11,7 +11,7 @@ export function ThemeToggle({ className = '' }) {
       onClick={toggle}
       aria-label={isDark ? 'حالت روشن' : 'حالت تاریک'}
       title={isDark ? 'حالت روشن' : 'حالت تاریک'}
-      className={`relative flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white/70 text-slate-700 shadow-sm backdrop-blur transition hover:text-brand-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:text-brand-300 ${className}`}
+      className={`relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-beacon-300 hover:text-beacon-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:text-beacon-300 ${className}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span

@@ -123,25 +123,25 @@ export function CameraCapture({ onCapture, onClear, captured }) {
         animate={{ opacity: 1, scale: 1 }}
         className="space-y-3"
       >
-        <div className="relative overflow-hidden rounded-3xl border border-emerald-400/40 shadow-glass">
+        <div className="relative overflow-hidden rounded-2xl border border-civic-400/40 shadow-card">
           <img
             src={captured.previewUrl}
             alt="تصویر ثبت‌شده"
             className="h-64 w-full object-cover"
           />
-          <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/90 px-3 py-1 text-xs font-bold text-white backdrop-blur">
+          <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-civic-500/90 px-3 py-1 text-xs font-bold text-white backdrop-blur">
             <ShieldCheck className="h-3.5 w-3.5" />
             معتبر
           </div>
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-xs text-white">
             <div className="flex items-center gap-2 font-semibold">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="flex h-2 w-2 rounded-full bg-civic-400" />
               تصویر معتبر دوربین — موقعیت قفل‌شده
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 opacity-90">
               <span className="inline-flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5" />
-                دقت ±{Math.round(captured.accuracy)} متر
+                دقت ±{Math.round(captured.accuracy).toLocaleString('fa-IR')} متر
               </span>
               <span>{new Date(captured.capturedAt).toLocaleString('fa-IR')}</span>
             </div>
@@ -150,7 +150,7 @@ export function CameraCapture({ onCapture, onClear, captured }) {
         <button
           type="button"
           onClick={retake}
-          className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 transition hover:text-brand-700 dark:text-brand-300"
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-beacon-600 transition hover:text-beacon-700 dark:text-beacon-400"
         >
           <RotateCcw className="h-4 w-4" />
           ثبت دوبارهٔ تصویر
@@ -162,13 +162,13 @@ export function CameraCapture({ onCapture, onClear, captured }) {
   // ── Live camera / start state ───────────────────────────────────────────
   return (
     <div className="space-y-3">
-      <p className="inline-flex items-start gap-2 text-xs font-medium text-rose-500">
+      <p className="inline-flex items-start gap-2 text-xs font-semibold text-coral-600 dark:text-coral-400">
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
         برای تأیید اعتبار گزارش، تصویر باید همین حالا با دوربین ثبت شود. آپلود از گالری ممکن
         نیست.
       </p>
 
-      <div className="relative flex h-64 items-center justify-center overflow-hidden rounded-3xl border border-white/40 bg-slate-900 shadow-inner dark:border-white/10">
+      <div className="relative flex h-64 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-ink-950 dark:border-white/10">
         <video
           ref={videoRef}
           playsInline
@@ -179,12 +179,12 @@ export function CameraCapture({ onCapture, onClear, captured }) {
         {/* Viewfinder corner accents while live */}
         {active && (
           <>
-            <span className="pointer-events-none absolute left-4 top-4 h-7 w-7 rounded-tl-xl border-l-2 border-t-2 border-emerald-400/80" />
-            <span className="pointer-events-none absolute right-4 top-4 h-7 w-7 rounded-tr-xl border-r-2 border-t-2 border-emerald-400/80" />
-            <span className="pointer-events-none absolute bottom-4 left-4 h-7 w-7 rounded-bl-xl border-b-2 border-l-2 border-emerald-400/80" />
-            <span className="pointer-events-none absolute bottom-4 right-4 h-7 w-7 rounded-br-xl border-b-2 border-r-2 border-emerald-400/80" />
+            <span className="pointer-events-none absolute left-4 top-4 h-7 w-7 rounded-tl-xl border-l-2 border-t-2 border-civic-400/80" />
+            <span className="pointer-events-none absolute right-4 top-4 h-7 w-7 rounded-tr-xl border-r-2 border-t-2 border-civic-400/80" />
+            <span className="pointer-events-none absolute bottom-4 left-4 h-7 w-7 rounded-bl-xl border-b-2 border-l-2 border-civic-400/80" />
+            <span className="pointer-events-none absolute bottom-4 right-4 h-7 w-7 rounded-br-xl border-b-2 border-r-2 border-civic-400/80" />
             <motion.span
-              className="pointer-events-none absolute inset-x-6 h-0.5 rounded-full bg-emerald-400/70 shadow-[0_0_12px_2px_rgba(16,185,129,0.6)]"
+              className="pointer-events-none absolute inset-x-6 h-0.5 rounded-full bg-civic-400/70 shadow-[0_0_12px_2px_rgba(16,185,129,0.6)]"
               initial={{ top: '12%' }}
               animate={{ top: ['12%', '88%', '12%'] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -201,7 +201,7 @@ export function CameraCapture({ onCapture, onClear, captured }) {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-600 dark:text-rose-300">
+        <div className="rounded-xl border border-coral-400/30 bg-coral-500/10 px-4 py-3 text-sm text-coral-600 dark:text-coral-300">
           {error}
         </div>
       )}
@@ -211,13 +211,13 @@ export function CameraCapture({ onCapture, onClear, captured }) {
           type="button"
           onClick={startCamera}
           disabled={starting}
-          className="btn-primary w-full py-3.5"
+          className="btn-primary w-full"
         >
           <Camera className="h-5 w-5" />
           {starting ? 'در حال روشن کردن دوربین…' : 'روشن کردن دوربین'}
         </button>
       ) : (
-        <button type="button" onClick={snap} disabled={busy} className="btn-emerald w-full py-3.5">
+        <button type="button" onClick={snap} disabled={busy} className="btn-civic w-full">
           <Aperture className="h-5 w-5" />
           {busy ? 'در حال ثبت و قفل موقعیت…' : 'ثبت تصویر و موقعیت'}
         </button>
