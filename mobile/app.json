@@ -1,0 +1,76 @@
+{
+  "expo": {
+    "name": "شهریاور",
+    "slug": "urbanhelper-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "urbanhelper",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#070b1a"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ir.urbanhelper.citizen",
+      "infoPlist": {
+        "NSCameraUsageDescription": "برای ثبت تصویر معتبر از مشکل شهری، به دوربین دسترسی لازم است.",
+        "NSLocationWhenInUseUsageDescription": "برای ثبت موقعیت دقیق گزارش، به موقعیت مکانی دسترسی لازم است."
+      }
+    },
+    "android": {
+      "package": "ir.urbanhelper.citizen",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4f46e5"
+      },
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "برای ثبت تصویر معتبر از مشکل شهری، به دوربین دسترسی لازم است."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "برای ثبت موقعیت دقیق گزارش، به موقعیت مکانی دسترسی لازم است."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#4f46e5"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#070b1a",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "eas": {}
+    }
+  }
+}
