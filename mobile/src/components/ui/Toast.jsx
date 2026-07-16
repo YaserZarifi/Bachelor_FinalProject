@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts, radius, shadow } from '../../theme';
 
 /** Auto-hiding glass toast pinned near the bottom. */
-export function Toast({ message, onHide, duration = 3200 }) {
+export function Toast({ message, onHide, duration = 3200, iconName = 'notifications', iconColor = colors.brand[300] }) {
   const anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function Toast({ message, onHide, duration = 3200 }) {
 
   const Inner = (
     <View style={styles.inner}>
-      <Ionicons name="notifications" size={18} color={colors.brand[300]} />
+      <Ionicons name={iconName} size={18} color={iconColor} />
       <Text style={styles.text}>{message}</Text>
     </View>
   );

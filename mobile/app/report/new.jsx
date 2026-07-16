@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -29,6 +28,7 @@ import { enqueueReport } from '../../src/api/offline';
 import { rememberGuestReport } from '../../src/api/guestStore';
 import { subscribeGuestReport } from '../../src/notifications/pushManager';
 import { useAuth } from '../../src/context/AuthContext';
+import { useFeedback } from '../../src/context/FeedbackContext';
 import { colors, fonts, radius } from '../../src/theme';
 
 const STEPS = ['ثبت تصویر', 'جزئیات', 'بازبینی'];
@@ -36,6 +36,7 @@ const STEPS = ['ثبت تصویر', 'جزئیات', 'بازبینی'];
 export default function NewReport() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { alert } = useFeedback();
   const { request: requestLocation } = useLocation();
 
   const [step, setStep] = useState(0);
@@ -106,11 +107,11 @@ export default function NewReport() {
     if (!net.isConnected) {
       await enqueueReport(item);
       setSubmitting(false);
-      Alert.alert(
-        'ذخیره آفلاین',
-        'گزارش شما ذخیره شد و به‌محض اتصال به اینترنت به‌صورت خودکار ارسال می‌شود.',
-        [{ text: 'باشه', onPress: () => router.replace('/(tabs)/reports') }]
-      );
+      alert({
+        title: 'ذخیره آفلاین',
+        message: 'گزارش شما ذخیره شد و به‌محض اتصال به اینترنت به‌صورت خودکار ارسال می‌شود.',
+        buttons: [{ text: 'باشه', onPress: () => router.replace('/(tabs)/reports') }],
+      });
       return;
     }
 
@@ -131,11 +132,11 @@ export default function NewReport() {
       // Network/server error → fall back to the offline queue.
       await enqueueReport(item);
       setSubmitting(false);
-      Alert.alert(
-        'ارسال ناموفق',
-        'گزارش در صف ارسال قرار گرفت و بعداً دوباره تلاش می‌شود.',
-        [{ text: 'باشه', onPress: () => router.replace('/(tabs)/reports') }]
-      );
+      alert({
+        title: 'ارسال ناموفق',
+        message: 'گزارش در صف ارسال قرار گرفت و بعداً دوباره تلاش می‌شود.',
+        buttons: [{ text: 'باشه', onPress: () => router.replace('/(tabs)/reports') }],
+      });
     }
   };
 

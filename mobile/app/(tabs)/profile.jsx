@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ import { AuroraBackground } from '../../src/components/ui/AuroraBackground';
 import { GlassCard } from '../../src/components/ui/GlassCard';
 import { Button } from '../../src/components/ui/Button';
 import { useAuth } from '../../src/context/AuthContext';
+import { useFeedback } from '../../src/context/FeedbackContext';
 import { getStoredPushToken } from '../../src/notifications/pushManager';
 import { colors, fonts, shadow } from '../../src/theme';
 
@@ -32,6 +33,7 @@ function Row({ icon, label, value, onPress, danger }) {
 export default function Profile() {
   const router = useRouter();
   const { isAuthenticated, user, signOut } = useAuth();
+  const { alert } = useFeedback();
   const [pushOn, setPushOn] = useState(false);
 
   useEffect(() => {
@@ -39,10 +41,14 @@ export default function Profile() {
   }, []);
 
   const confirmSignOut = () => {
-    Alert.alert('خروج از حساب', 'آیا مطمئن هستید؟', [
-      { text: 'انصراف', style: 'cancel' },
-      { text: 'خروج', style: 'destructive', onPress: signOut },
-    ]);
+    alert({
+      title: 'خروج از حساب',
+      message: 'آیا مطمئن هستید که می‌خواهید از حساب خود خارج شوید؟',
+      buttons: [
+        { text: 'انصراف', style: 'cancel' },
+        { text: 'خروج', style: 'destructive', onPress: signOut },
+      ],
+    });
   };
 
   return (

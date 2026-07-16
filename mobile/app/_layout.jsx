@@ -16,10 +16,12 @@ import {
 } from '@expo-google-fonts/vazirmatn';
 
 import { AuthProvider } from '../src/context/AuthContext';
+import { FeedbackProvider, useFeedback } from '../src/context/FeedbackContext';
 import {
   ensureAndroidChannel,
   configureForegroundHandler,
   addNotificationResponseListener,
+  addNotificationReceivedListener,
   getLastNotificationResponse,
 } from '../src/notifications/registerPush';
 import { colors } from '../src/theme';
@@ -27,7 +29,7 @@ import { colors } from '../src/theme';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // Remote push isn't supported in Expo Go (SDK 53+) — the app degrades gracefully
-// to live WebSocket updates + local notifications. Hide the expected dev noise.
+// to live WebSocket updates + in-app toasts. Hide the expected dev noise.
 LogBox.ignoreLogs([
   'expo-notifications',
   '`expo-notifications` functionality is not fully supported in Expo Go',
@@ -35,11 +37,55 @@ LogBox.ignoreLogs([
   'No "projectId" found',
 ]);
 
-export default function RootLayout() {
+/**
+ * Bridges OS notifications into the app: foreground arrivals become in-app
+ * toasts (never native banners), and taps deep-link to the report. Lives inside
+ * FeedbackProvider so it can use the in-app toast.
+ */
+function NotificationBridge() {
   const router = useRouter();
+  const { toast } = useFeedback();
+  const responded = useRef(false);
+
+  useEffect(() => {
+    configureForegroundHandler();
+    ensureAndroidChannel();
+
+    const goToReport = (response) => {
+      const data = response?.notification?.request?.content?.data;
+      if (data?.report_id) router.push(`/report/${data.report_id}`);
+    };
+
+    // Cold start from a notification tap.
+    getLastNotificationResponse().then((resp) => {
+      if (resp && !responded.current) {
+        responded.current = true;
+        setTimeout(() => goToReport(resp), 400);
+      }
+    });
+
+    // Tap while running.
+    const tapSub = addNotificationResponseListener(goToReport);
+
+    // Foreground arrival → show the app's own toast instead of an OS banner.
+    const recvSub = addNotificationReceivedListener((notification) => {
+      const content = notification?.request?.content;
+      const message = content?.body || content?.title || 'به‌روزرسانی جدید';
+      toast(message, 'info');
+    });
+
+    return () => {
+      tapSub?.remove();
+      recvSub?.remove();
+    };
+  }, [router, toast]);
+
+  return null;
+}
+
+export default function RootLayout() {
   // Load fonts, but DO NOT gate rendering on them — if a font asset errors,
-  // gating would leave the app frozen on the splash forever. Unloaded custom
-  // fonts simply fall back to the system font until they're ready.
+  // gating would leave the app frozen on the splash forever.
   const [fontsLoaded, fontError] = useFonts({
     Vazir_300: Vazirmatn_300Light,
     Vazir_400: Vazirmatn_400Regular,
@@ -58,50 +104,28 @@ export default function RootLayout() {
     return () => clearTimeout(t);
   }, [fontsLoaded, fontError]);
 
-  // Notification channel + tap routing
-  const responded = useRef(false);
-  useEffect(() => {
-    configureForegroundHandler();
-    ensureAndroidChannel();
-
-    const goToReport = (response) => {
-      const data = response?.notification?.request?.content?.data;
-      if (data?.report_id) {
-        router.push(`/report/${data.report_id}`);
-      }
-    };
-
-    // Cold start from a notification tap
-    getLastNotificationResponse().then((resp) => {
-      if (resp && !responded.current) {
-        responded.current = true;
-        setTimeout(() => goToReport(resp), 400);
-      }
-    });
-
-    const sub = addNotificationResponseListener(goToReport);
-    return () => sub?.remove();
-  }, [router]);
-
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.ink }}>
       <AuthProvider>
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.ink },
-            animation: 'fade',
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="report/new" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="report/[id]" options={{ animation: 'slide_from_right' }} />
-          <Stack.Screen name="auth/login" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="auth/register" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        </Stack>
+        <FeedbackProvider>
+          <NotificationBridge />
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.ink },
+              animation: 'fade',
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="report/new" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="report/[id]" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="auth/login" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="auth/register" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          </Stack>
+        </FeedbackProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   );

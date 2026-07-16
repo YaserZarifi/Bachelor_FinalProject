@@ -16,16 +16,20 @@ function getNotifications() {
 
 let _handlerConfigured = false;
 
-/** Foreground behaviour: show banner + play sound while the app is open. */
+/**
+ * Foreground behaviour: SUPPRESS the OS banner/sound while the app is open —
+ * شهریاور renders its own in-app toast instead (see FeedbackProvider). The OS
+ * only handles notifications while the app is backgrounded/closed.
+ */
 export function configureForegroundHandler() {
   if (_handlerConfigured) return;
   _handlerConfigured = true;
   const Notifications = getNotifications();
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldShowList: true,
-      shouldPlaySound: true,
+      shouldShowBanner: false,
+      shouldShowList: false,
+      shouldPlaySound: false,
       shouldSetBadge: false,
     }),
   });
@@ -92,6 +96,12 @@ export async function presentLocal(title, body, data = {}) {
 export function addNotificationResponseListener(cb) {
   const Notifications = getNotifications();
   return Notifications.addNotificationResponseReceivedListener(cb);
+}
+
+/** Subscribe to notifications received while the app is in the foreground. */
+export function addNotificationReceivedListener(cb) {
+  const Notifications = getNotifications();
+  return Notifications.addNotificationReceivedListener(cb);
 }
 
 /** The notification that cold-started the app (if any). */
