@@ -8,6 +8,13 @@ body,
   min-height: 100%;
 }
 
+/* Tabular numerals for data (KPIs, chart ticks, ids) */
+.tnum {
+  font-family: '"Space Grotesk"', 'Vazirmatn', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -15,6 +22,9 @@ body,
 ::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background: rgba(148, 163, 184, 0.35);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(242, 162, 13, 0.55);
 }
 
 /* Leaflet polish + dark map tiles when in dark mode */
@@ -34,10 +44,10 @@ body,
   }
 }
 .dark .leaflet-tile {
-  filter: brightness(0.7) invert(1) contrast(0.9) hue-rotate(200deg) saturate(0.7);
+  filter: brightness(0.72) invert(1) contrast(0.92) hue-rotate(190deg) saturate(0.75);
 }
 .dark .leaflet-control-attribution {
-  background: rgba(15, 23, 42, 0.7) !important;
+  background: rgba(11, 18, 32, 0.72) !important;
   color: #94a3b8 !important;
 }
 .dark .leaflet-control-attribution a {
