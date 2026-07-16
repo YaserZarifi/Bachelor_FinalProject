@@ -1,15 +1,21 @@
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { colors } from '../theme';
 
 /**
- * expo-notifications is loaded LAZILY (require inside functions) on purpose.
- * In Expo Go (SDK 53+) merely importing it prints a "remote push not supported"
- * error via an import-time side effect. Because ES `import` runs before any
- * module body, a static import would fire that before LogBox.ignoreLogs (set in
- * app/_layout.jsx) takes effect. Lazy-loading defers it to runtime, after the
- * ignore list is registered, so the demo stays clean. A development build has
- * full push support and is unaffected.
+ * expo-notifications is loaded LAZILY (require inside functions) AND fully
+ * skipped in Expo Go. In Expo Go (SDK 53+) merely `require`-ing the module runs
+ * a side effect that throws a red "remote push not supported" error. A dev build
+ * has full push support, so we gate every entry point on `isExpoGo`: there, the
+ * app relies on live WebSocket updates + in-app toasts (see FeedbackProvider)
+ * and never touches the native notifications module.
  */
+const isExpoGo =
+  Constants.executionEnvironment === 'storeClient' ||
+  Constants.appOwnership === 'expo';
+
+const NOOP_SUBSCRIPTION = { remove() {} };
+
 function getNotifications() {
   return require('expo-notifications');
 }
@@ -22,7 +28,7 @@ let _handlerConfigured = false;
  * only handles notifications while the app is backgrounded/closed.
  */
 export function configureForegroundHandler() {
-  if (_handlerConfigured) return;
+  if (isExpoGo || _handlerConfigured) return;
   _handlerConfigured = true;
   const Notifications = getNotifications();
   Notifications.setNotificationHandler({
@@ -37,7 +43,7 @@ export function configureForegroundHandler() {
 
 /** Ensure the Android notification channel used for status updates exists. */
 export async function ensureAndroidChannel() {
-  if (Platform.OS !== 'android') return;
+  if (isExpoGo || Platform.OS !== 'android') return;
   const Notifications = getNotifications();
   await Notifications.setNotificationChannelAsync('status-updates', {
     name: 'به‌روزرسانی وضعیت گزارش',
@@ -50,9 +56,9 @@ export async function ensureAndroidChannel() {
 
 /** Ask for permission and return the Expo push token (or null). */
 export async function getExpoPushToken() {
+  if (isExpoGo) return null; // Expo Go can't obtain a remote push token
   const Notifications = getNotifications();
   const Device = require('expo-device');
-  const Constants = require('expo-constants').default;
 
   await ensureAndroidChannel();
 
@@ -75,12 +81,13 @@ export async function getExpoPushToken() {
     );
     return tokenData.data;
   } catch {
-    return null; // not supported in Expo Go — use a development build
+    return null; // not supported — use a development build
   }
 }
 
 /** Fire a local notification immediately (foreground fallback). */
 export async function presentLocal(title, body, data = {}) {
+  if (isExpoGo) return;
   try {
     const Notifications = getNotifications();
     await Notifications.scheduleNotificationAsync({
@@ -94,18 +101,21 @@ export async function presentLocal(title, body, data = {}) {
 
 /** Subscribe to notification taps. Returns a subscription with .remove(). */
 export function addNotificationResponseListener(cb) {
+  if (isExpoGo) return NOOP_SUBSCRIPTION;
   const Notifications = getNotifications();
   return Notifications.addNotificationResponseReceivedListener(cb);
 }
 
 /** Subscribe to notifications received while the app is in the foreground. */
 export function addNotificationReceivedListener(cb) {
+  if (isExpoGo) return NOOP_SUBSCRIPTION;
   const Notifications = getNotifications();
   return Notifications.addNotificationReceivedListener(cb);
 }
 
 /** The notification that cold-started the app (if any). */
 export async function getLastNotificationResponse() {
+  if (isExpoGo) return null;
   const Notifications = getNotifications();
   return Notifications.getLastNotificationResponseAsync();
 }
