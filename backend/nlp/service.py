@@ -1,6 +1,6 @@
 # ==============================================================
 # service.py  (نسخه ۲ — با sklearn classifier)
-# جریان: crisis → sklearn classifier → (fallback: Claude API)
+# جریان: crisis → sklearn classifier → (fallback: Gemini API)
 #         → sentiment → نتیجه نهایی
 # ==============================================================
 
@@ -103,7 +103,7 @@ def analyze_report(text: str, available_categories: list[str] | None = None) -> 
 
     Args:
         text: متن توضیحات گزارش
-        available_categories: لیست دسته‌های DB برای Claude fallback
+        available_categories: لیست دسته‌های DB برای fallback مدل زبانی (Gemini)
 
     Returns:
         NLPResult

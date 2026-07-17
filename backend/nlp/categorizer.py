@@ -2,7 +2,7 @@
 # categorizer.py
 # دسته‌بندی خودکار گزارش‌ها بر اساس متن توضیحات
 # رویکرد: Rule-based با کلیدواژه‌های وزن‌دار فارسی
-# در صورت اطمینان پایین → fallback به Claude API
+# در صورت اطمینان پایین → fallback به Gemini API
 # ==============================================================
 
 from __future__ import annotations
@@ -76,7 +76,7 @@ def classify_text(text: str) -> dict:
             "category": str | None,     # نام دسته پیشنهادی
             "confidence": float,         # میزان اطمینان (0.0 - 1.0)
             "scores": dict,              # امتیاز همه دسته‌ها
-            "needs_ai_fallback": bool,   # آیا نیاز به Claude API دارد؟
+            "needs_ai_fallback": bool,   # آیا نیاز به fallback مدل زبانی دارد؟
         }
     """
     scores: dict[str, int] = {}

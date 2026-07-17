@@ -12,7 +12,7 @@ INSTALLED_APPS = [
 
 # ── ب) در انتهای فایل اضافه کن: ────────────────────────────
 # NLP / AI Settings
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 # Logging برای ماژول NLP
 LOGGING = {
@@ -50,4 +50,4 @@ urlpatterns = [
 # PATCH 3: requirements.txt
 # این خط‌ها را اضافه کن:
 # ============================================================
-# anthropic>=0.40.0
+# google-generativeai==0.8.4
