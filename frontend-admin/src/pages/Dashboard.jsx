@@ -993,10 +993,6 @@ export default function Dashboard() {
 
         </Grid>
 
-        {/* Extended analytics */}
-        <PLACEHOLDER_ANALYTICS_MARKER />
-      </Box>
-
       {/* ── Report detail popup ─────────────────────────────────────────────
           The popup carries its own mini-map (pinned to this report's exact
           location) so the location context lives INSIDE the popup instead of
@@ -1156,6 +1152,74 @@ export default function Dashboard() {
                   </Grid>
 
                   <Grid item xs={12} md={5}>
+                    {/* The popup's own map: pinned to this report's exact
+                        location, so the map context lives inside the popup
+                        rather than being covered by it. */}
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        height: 200,
+                        mb: 2,
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                        border: `1px solid ${muiTheme.palette.divider}`,
+                      }}
+                    >
+                      {selectedPoint ? (
+                        <MapContainer
+                          key={selected.id}
+                          center={selectedPoint}
+                          zoom={16}
+                          scrollWheelZoom={false}
+                          zoomControl={false}
+                          attributionControl={false}
+                          style={{ height: '100%', width: '100%' }}
+                        >
+                          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          <InvalidateOnOpen />
+                          <Marker
+                            position={selectedPoint}
+                            icon={pinIcon(selected.properties?.status, selected.properties?.is_urgent)}
+                          />
+                        </MapContainer>
+                      ) : (
+                        <Box
+                          sx={{
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'text.secondary',
+                            gap: 1,
+                          }}
+                        >
+                          <MapPin size={18} /> موقعیت ثبت نشده
+                        </Box>
+                      )}
+                      {selectedPoint && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 8,
+                            left: 8,
+                            zIndex: 500,
+                            px: 1,
+                            py: 0.25,
+                            borderRadius: 999,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: '#fff',
+                            bgcolor: 'rgba(11,18,32,0.75)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                          }}
+                        >
+                          <MapPin size={12} /> موقعیت گزارش
+                        </Box>
+                      )}
+                    </Box>
+
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                       <Typography variant="caption" color="text.secondary">
                         وضعیت فعلی:
@@ -1224,10 +1288,11 @@ export default function Dashboard() {
                     )}
                   </Grid>
                 </Grid>
-              </Card>
-            </Grid>
-          )}
-        </Grid>
+              </Box>
+            </Box>
+          </Box>
+        )}
+      </AnimatePresence>
 
         {/* Extended analytics */}
         <Grid container spacing={{ xs: 2, md: 3 }} ref={analyticsRef}>
