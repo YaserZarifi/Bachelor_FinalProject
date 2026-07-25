@@ -1,17 +1,17 @@
 # ==============================================================
-# service.py  (نسخه ۲ — با sklearn classifier)
-# جریان: crisis → sklearn classifier → (fallback: Gemini API)
+# service.py  (نسخه ۳ — با sklearn classifier + Groq fallback)
+# جریان: crisis → sklearn classifier → (fallback: Groq API — دسته + احساسات)
 #         → sentiment → نتیجه نهایی
 # ==============================================================
 
 from __future__ import annotations
 import logging
-import os
 from dataclasses import dataclass, asdict
 
 from .crisis_keywords import is_crisis
-from .classifier import predict_category        # ← جدید: sklearn
+from .classifier import predict_category        # ← sklearn
 from .sentiment import analyze_sentiment
+from .groq_client import classify_with_groq     # ← LLM fallback (Groq)
 
 logger = logging.getLogger(__name__)
 
@@ -39,58 +39,10 @@ class NLPResult:
     # متا
     used_ai_fallback: bool
     raw_text_length: int
+    sentiment_source: str = "lexicon"   # "lexicon" | "groq"
 
     def to_dict(self) -> dict:
         return asdict(self)
-
-
-# ──────────────────────────────────────────────────────────────
-# Gemini API fallback
-# ──────────────────────────────────────────────────────────────
-
-def _call_gemini_for_category(text: str, available_categories: list[str]) -> dict:
-    """وقتی sklearn اطمینان کافی ندارد، از Gemini API کمک می‌گیریم."""
-    try:
-        import google.generativeai as genai
-        api_key = os.environ.get("GEMINI_API_KEY", "")
-        if not api_key:
-            logger.warning("[NLP] GEMINI_API_KEY not set — skipping AI fallback")
-            return {"category": None, "confidence": 0.0}
-
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        
-        categories_str = "\n".join(f"- {c}" for c in available_categories)
-
-        prompt = f"""تو یک سیستم دسته‌بندی گزارش‌های شهری هستی.
-
-دسته‌های موجود:
-{categories_str}
-- سایر (هیچ‌کدام از موارد بالا)
-
-متن گزارش:
-\"\"\"{text}\"\"\"
-
-فقط نام دقیق یکی از دسته‌های بالا را برگردان. بدون هیچ توضیح اضافی یا متن دیگری."""
-
-        response = model.generate_content(prompt)
-        result = response.text.strip()
-
-        if result in available_categories:
-            return {"category": result, "confidence": 0.90}
-        
-        # Fuzzy match
-        for cat in available_categories:
-            if cat in result or result in cat:
-                return {"category": cat, "confidence": 0.75}
-        
-        return {"category": None, "confidence": 0.5}
-
-    except ImportError:
-        logger.error("[NLP] google-generativeai not installed. Run: pip install google-generativeai")
-    except Exception as e:
-        logger.error(f"[NLP] Gemini API error: {e}")
-    return {"category": None, "confidence": 0.0}
 
 
 # ──────────────────────────────────────────────────────────────
@@ -103,7 +55,7 @@ def analyze_report(text: str, available_categories: list[str] | None = None) -> 
 
     Args:
         text: متن توضیحات گزارش
-        available_categories: لیست دسته‌های DB برای fallback مدل زبانی (Gemini)
+        available_categories: لیست دسته‌های DB برای fallback مدل زبانی (Groq)
 
     Returns:
         NLPResult
@@ -124,6 +76,7 @@ def analyze_report(text: str, available_categories: list[str] | None = None) -> 
     # ── ۲. sklearn classifier ────────────────────────────────────
     sklearn_result = predict_category(text)
     used_ai = False
+    groq_sentiment = None   # اگر Groq اجرا شود، احساساتش هم برمی‌گردد
 
     if not sklearn_result["needs_ai_fallback"]:
         # مدل محلی اطمینان کافی دارد
@@ -133,17 +86,24 @@ def analyze_report(text: str, available_categories: list[str] | None = None) -> 
         all_scores = sklearn_result["all_scores"]
 
     elif available_categories:
-        # ── ۳. Fallback به Gemini API ────────────────────────────
+        # ── ۳. Fallback به Groq (دسته + احساسات در یک فراخوانی) ─────
         logger.info(
             f"[NLP] sklearn confidence={sklearn_result['confidence']:.2f} — "
-            "calling Gemini API"
+            "calling Groq API"
         )
-        ai_result = _call_gemini_for_category(text, available_categories)
-        used_ai = True
-        suggested_category = ai_result["category"]
-        category_confidence = ai_result["confidence"]
-        category_source = "ai_api" if suggested_category else "unknown"
+        ai_result = classify_with_groq(text, available_categories)
         all_scores = sklearn_result["all_scores"]  # نگه‌داری برای مقایسه
+        if ai_result is not None:
+            used_ai = True
+            suggested_category = ai_result["category"]
+            category_confidence = ai_result["confidence"]
+            category_source = "groq" if suggested_category else "unknown"
+            groq_sentiment = ai_result.get("sentiment")
+        else:
+            # Groq در دسترس نبود یا خطا داد → بدون شکست، دسته نامشخص
+            suggested_category = None
+            category_confidence = sklearn_result["confidence"]
+            category_source = "unknown"
 
     else:
         suggested_category = None
@@ -152,7 +112,13 @@ def analyze_report(text: str, available_categories: list[str] | None = None) -> 
         all_scores = sklearn_result["all_scores"]
 
     # ── ۴. تحلیل احساسات ────────────────────────────────────────
+    # پیش‌فرض: لغت‌نامه. اگر Groq احساسات معتبر برگردانده باشد، همان اولویت دارد
+    # تا مشکل «همیشه خنثی» لغت‌نامه رفع شود.
     sentiment = analyze_sentiment(text)
+    sentiment_source = "lexicon"
+    if groq_sentiment:
+        sentiment = groq_sentiment
+        sentiment_source = "groq"
 
     return NLPResult(
         suggested_category=suggested_category,
@@ -168,4 +134,5 @@ def analyze_report(text: str, available_categories: list[str] | None = None) -> 
         sentiment_intensity=sentiment["intensity"],
         used_ai_fallback=used_ai,
         raw_text_length=len(text),
+        sentiment_source=sentiment_source,
     )

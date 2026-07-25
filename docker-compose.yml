@@ -38,7 +38,13 @@ services:
       - DB_USER=urban_admin
       - DB_PASS=urban_secret
       - REDIS_HOST=redis
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
+      # Dev: allow the Expo app to reach the API from any LAN IP (e.g. your
+      # phone hitting 10.10.10.x:8080). The React Native WebSocket also sends no
+      # web Origin, so allow all WS origins in dev. Tighten these for production.
+      - DJANGO_ALLOWED_HOSTS=*
+      - WEBSOCKET_ALLOWED_ORIGINS=*
     depends_on:
       db:
         condition: service_healthy
@@ -57,7 +63,8 @@ services:
       - DB_USER=urban_admin
       - DB_PASS=urban_secret
       - REDIS_HOST=redis
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
     depends_on:
       db:
         condition: service_healthy
