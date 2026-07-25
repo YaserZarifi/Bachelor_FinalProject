@@ -9,6 +9,7 @@ import { AuroraBackground } from '../../src/components/ui/AuroraBackground';
 import { GlassCard } from '../../src/components/ui/GlassCard';
 import { Button } from '../../src/components/ui/Button';
 import { ReportCard } from '../../src/components/ReportCard';
+import { PendingQueue } from '../../src/components/PendingQueue';
 import { useAuth } from '../../src/context/AuthContext';
 import { fetchMyReports, fetchReport } from '../../src/api/reports';
 import { getGuestReports } from '../../src/api/guestStore';
@@ -83,12 +84,16 @@ export default function Reports() {
             </Animated.View>
           )}
           ListHeaderComponent={
-            error && items.length > 0 ? (
-              <View style={styles.errBanner}>
-                <Ionicons name="cloud-offline-outline" size={16} color={colors.rose} />
-                <Text style={styles.errText}>{error}</Text>
-              </View>
-            ) : null
+            <>
+              {/* Live offline outbox: real server-connection state, delete, send-now. */}
+              <PendingQueue onSynced={load} />
+              {error && items.length > 0 ? (
+                <View style={styles.errBanner}>
+                  <Ionicons name="cloud-offline-outline" size={16} color={colors.rose} />
+                  <Text style={styles.errText}>{error}</Text>
+                </View>
+              ) : null}
+            </>
           }
           ListEmptyComponent={
             !loading ? (

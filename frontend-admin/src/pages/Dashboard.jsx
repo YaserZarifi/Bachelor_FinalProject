@@ -43,6 +43,8 @@ import {
   RefreshCw,
   WifiOff,
   Radio,
+  X,
+  MapPin,
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -64,7 +66,7 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
 import { api, flattenFeatures, logoutClient, mediaUrl, wsBaseUrl } from '../api/client';
 import toast from 'react-hot-toast';
@@ -183,6 +185,18 @@ function MapController({ points, selectedPoint }) {
       map.fitBounds(points, { padding: [60, 60], maxZoom: 15 });
     }
   }, [points, selectedPoint, map]);
+  return null;
+}
+
+// A map mounted inside an animating modal starts life at size 0, so Leaflet
+// lays the tiles out wrong (grey gaps). Nudge it to re-measure once the popup's
+// entrance animation has settled.
+function InvalidateOnOpen() {
+  const map = useMap();
+  useEffect(() => {
+    const t = setTimeout(() => map.invalidateSize(), 280);
+    return () => clearTimeout(t);
+  }, [map]);
   return null;
 }
 
@@ -413,6 +427,22 @@ export default function Dashboard() {
     setAfterFile(null);
   }, [selectedId]);
 
+  // While the detail popup is open: Escape closes it and the page underneath
+  // is scroll-locked so the backdrop feels like a true modal layer.
+  useEffect(() => {
+    if (!selectedId) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setSelectedId(null);
+    };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [selectedId]);
+
   // Live status for the selected report (reconnecting).
   useEffect(() => {
     if (!selected?.id) {
@@ -459,10 +489,25 @@ export default function Dashboard() {
     return toLatLng(active?.geometry) || [35.6892, 51.389];
   }, [filtered, selected]);
 
-  // All visible report points as [lat, lng] (for fit-bounds), and the selected one.
+  // Closed reports are hidden from the map by default so it doesn't fill up with
+  // stale pins over time. A مختومه report is drawn only when the admin explicitly
+  // selects it (clicks it to show on the map) — or when the status filter is set
+  // to "مختومه", meaning the admin deliberately wants to see closed reports.
+  const mapFeatures = useMemo(
+    () =>
+      filtered.filter(
+        (f) =>
+          f.properties?.status !== 'CLOSED' ||
+          statusFilter === 'CLOSED' ||
+          String(f.id) === String(selectedId),
+      ),
+    [filtered, statusFilter, selectedId],
+  );
+
+  // All map-visible report points as [lat, lng] (for fit-bounds), and the selected one.
   const points = useMemo(
-    () => filtered.map((f) => toLatLng(f.geometry)).filter(Boolean),
-    [filtered],
+    () => mapFeatures.map((f) => toLatLng(f.geometry)).filter(Boolean),
+    [mapFeatures],
   );
   const selectedPoint = useMemo(() => toLatLng(selected?.geometry), [selected]);
 
@@ -796,7 +841,7 @@ export default function Dashboard() {
               <MapContainer center={center} zoom={6} style={{ height: '100%', width: '100%' }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapController points={points} selectedPoint={selectedPoint} />
-                {filtered.map((f) => {
+                {mapFeatures.map((f) => {
                   const ll = toLatLng(f.geometry);
                   if (!ll) return null;
                   return (
@@ -946,18 +991,100 @@ export default function Dashboard() {
             </Card>
           </Grid>
 
-          {selected && (
-            <Grid item xs={12}>
-              <Card sx={{ p: 3, borderColor: 'primary.main' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+        </Grid>
+
+        {/* Extended analytics */}
+        <PLACEHOLDER_ANALYTICS_MARKER />
+      </Box>
+
+      {/* ── Report detail popup ─────────────────────────────────────────────
+          The popup carries its own mini-map (pinned to this report's exact
+          location) so the location context lives INSIDE the popup instead of
+          being hidden behind it. The big dashboard map still flies to the same
+          spot underneath, so closing the popup lands you right there. */}
+      <AnimatePresence>
+        {selected && (
+          <Box
+            key="report-detail-backdrop"
+            component={motion.div}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setSelectedId(null)}
+            sx={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 1400,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: { xs: 1.5, md: 3 },
+              bgcolor: 'rgba(2,6,20,0.6)',
+              backdropFilter: 'blur(6px)',
+            }}
+          >
+            <Box
+              component={motion.div}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`جزئیات گزارش شماره ${selected.id}`}
+              initial={{ opacity: 0, scale: 0.94, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+              onClick={(e) => e.stopPropagation()}
+              sx={{
+                width: 'min(1060px, 100%)',
+                maxHeight: '92vh',
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: 4,
+                overflow: 'hidden',
+                border: `1px solid ${muiTheme.palette.divider}`,
+                boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
+                bgcolor:
+                  muiTheme.palette.mode === 'dark'
+                    ? 'rgba(15,23,42,0.9)'
+                    : 'rgba(255,255,255,0.94)',
+                backdropFilter: 'blur(18px)',
+              }}
+            >
+              {/* Sticky header */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 1,
+                  p: 2.5,
+                  borderBottom: `1px solid ${muiTheme.palette.divider}`,
+                  flexShrink: 0,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
                   <Typography variant="h6" className="tnum" sx={{ fontWeight: 'bold' }}>
                     جزئیات گزارش #{selected.id}
                   </Typography>
                   {selected.properties?.is_urgent && (
-                    <Chip icon={<AlertTriangle size={14} />} label="فوری" color="error" />
+                    <Chip icon={<AlertTriangle size={14} />} label="فوری" color="error" size="small" />
                   )}
+                  <Chip
+                    size="small"
+                    icon={<Radio size={12} />}
+                    label={live ? 'زنده' : 'آفلاین'}
+                    color={live ? 'success' : 'default'}
+                    variant={live ? 'filled' : 'outlined'}
+                    sx={{ fontWeight: 700 }}
+                  />
                 </Box>
+                <IconButton onClick={() => setSelectedId(null)} aria-label="بستن" size="small">
+                  <X size={20} />
+                </IconButton>
+              </Box>
 
+              {/* Scrollable body */}
+              <Box sx={{ p: 3, overflowY: 'auto' }}>
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={7}>
                     <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.9 }}>

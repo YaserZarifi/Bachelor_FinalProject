@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import NetInfo from '@react-native-community/netinfo';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 
 import { AuroraBackground } from '../../src/components/ui/AuroraBackground';
@@ -12,9 +11,9 @@ import { GlassCard } from '../../src/components/ui/GlassCard';
 import { Button } from '../../src/components/ui/Button';
 import { BrandLockup } from '../../src/components/Brand';
 import { StatusBadge } from '../../src/components/StatusBadge';
+import { PendingQueue } from '../../src/components/PendingQueue';
 import { useAuth } from '../../src/context/AuthContext';
 import { initPush } from '../../src/notifications/pushManager';
-import { syncQueue, getPendingCount } from '../../src/api/offline';
 import { getGuestReports } from '../../src/api/guestStore';
 import { fetchMyReports } from '../../src/api/reports';
 import { colors, fonts, radius, shadow } from '../../src/theme';
@@ -36,22 +35,14 @@ export default function Home() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const [latest, setLatest] = useState(null);
-  const [pending, setPending] = useState(0);
 
-  // Register for push + flush offline queue once on entry / connectivity.
+  // Register for push once on entry. The offline queue (flush-on-reconnect,
+  // delete, live connection state) is owned by <PendingQueue/> below.
   useEffect(() => {
     initPush({ authenticated: isAuthenticated });
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    const unsub = NetInfo.addEventListener((s) => {
-      if (s.isConnected) syncQueue().then(refresh);
-    });
-    return unsub;
-  }, []);
-
   const refresh = useCallback(async () => {
-    setPending(await getPendingCount());
     let newest = null;
     try {
       if (isAuthenticated) {
@@ -110,16 +101,8 @@ export default function Home() {
             </Pressable>
           </Animated.View>
 
-          {pending > 0 && (
-            <GlassCard style={styles.pendingCard}>
-              <View style={styles.pendingRow}>
-                <Ionicons name="cloud-upload-outline" size={20} color={colors.amber} />
-                <Text style={styles.pendingText}>
-                  {pending.toLocaleString('fa-IR')} گزارش در صف ارسال (آفلاین)
-                </Text>
-              </View>
-            </GlassCard>
-          )}
+          {/* Live offline outbox: connection state, per-item delete, send-now. */}
+          <PendingQueue onSynced={refresh} />
 
           {/* Latest report mini-status */}
           {latest && (
@@ -210,9 +193,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand[400], paddingHorizontal: 18, paddingVertical: 10, borderRadius: 999, marginTop: 16,
   },
   heroBtnText: { color: colors.onBrand, fontFamily: fonts.bold, fontSize: 14 },
-  pendingCard: { marginTop: 14, borderColor: colors.amber + '55' },
-  pendingRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: 8 },
-  pendingText: { color: colors.amber, fontFamily: fonts.semibold, fontSize: 13, textAlign: 'right' },
   cardLabel: { color: colors.textFaint, fontFamily: fonts.semibold, fontSize: 12, textAlign: 'right', marginBottom: 8 },
   latestRow: { flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between' },
   latestId: { color: colors.textFaint, fontFamily: fonts.medium, fontSize: 13 },

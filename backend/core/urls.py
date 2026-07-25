@@ -18,13 +18,25 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from civic_api.views_auth import RegisterView, UrbanTokenObtainPairView
 
+
+def health(_request):
+    """Lightweight liveness probe (no auth, no DB) so clients can tell whether
+    the API server itself is reachable — used by the mobile offline queue to
+    show a real "connected to server" state instead of mere internet reachability."""
+    return JsonResponse({"status": "ok"})
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Liveness probe for clients (mobile offline outbox).
+    path('api/health/', health, name='health'),
 
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

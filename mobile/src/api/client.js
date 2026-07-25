@@ -83,6 +83,21 @@ async function doRefresh() {
   return access;
 }
 
+/**
+ * True server-reachability probe. Hits the unauthenticated /api/health/ endpoint
+ * with a short timeout, using a bare axios (no auth interceptor / refresh loop),
+ * so callers can distinguish "connected to the API server" from mere internet
+ * connectivity. Returns true only on a 2xx response.
+ */
+export async function pingServer(timeoutMs = 4000) {
+  try {
+    const res = await axios.get(`${API_ROOT}/health/`, { timeout: timeoutMs });
+    return res.status >= 200 && res.status < 300;
+  } catch {
+    return false;
+  }
+}
+
 // ── GeoJSON helpers (mirror frontend-citizen api/client.js) ──────────────────
 export function flattenFeatures(payload) {
   if (!payload) return [];
