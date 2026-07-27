@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-make_figures.py — تولید نمودارهای گزارش از روی معماری واقعی کد.
+make_figures.py - تولید نمودارهای گزارش از روی معماری واقعی کد.
 
 قاعده: برچسب‌های داخل نمودار انگلیسی‌اند (رندر فارسی در matplotlib شکننده است)؛
 کپشن فارسی در خود گزارش زیر هر شکل می‌آید. خروجی PNG با ۳۰۰ DPI در thesis/figures/.
@@ -57,7 +57,7 @@ def save(fig, name):
 # ---------------------------------------------------------------------------
 def fig_arch():
     fig, ax = plt.subplots(figsize=(9, 6.6)); ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    ax.text(50, 97, "UrbanHelper — System Architecture", ha="center", fontsize=13, fontweight="bold", color=INK)
+    ax.text(50, 97, "UrbanHelper: System Architecture", ha="center", fontsize=13, fontweight="bold", color=INK)
     # clients
     box(ax, 4, 80, 27, 12, "Citizen Web SPA\nReact 19 + Tailwind (RTL)\nIn-app Camera · IndexedDB", C_CLIENT, C_CLIENT_E, 9)
     box(ax, 36.5, 80, 27, 12, "Admin Dashboard\nReact 19 + MUI (RTL)\nLeaflet · Recharts", C_CLIENT, C_CLIENT_E, 9)
@@ -91,7 +91,7 @@ def fig_deploy():
     box(ax, 68, 78, 26, 11, "Expo dev client\n(LAN IP)", C_CLIENT, C_CLIENT_E, 9)
     box(ax, 28, 50, 44, 14, "backend (Daphne / ASGI)\nhost :8080 → 8000\npython:3.12-slim + GDAL", C_API, C_API_E, 10, bold=True)
     box(ax, 6, 50, 18, 14, "celery_worker\ncelery -A core", C_API, C_API_E, 9)
-    box(ax, 20, 20, 30, 13, "db — PostGIS\npostgis/postgis:15-3.3\nhost :5433 → 5432", C_DATA, C_DATA_E, 9)
+    box(ax, 20, 20, 30, 13, "db - PostGIS\npostgis/postgis:15-3.3\nhost :5433 → 5432", C_DATA, C_DATA_E, 9)
     box(ax, 58, 20, 26, 13, "redis :6379\nredis:7-alpine", C_DATA, C_DATA_E, 9)
     for x in (19, 50, 81):
         arrow(ax, (x, 78), (x if x != 81 else 72, 64), color=C_GRAY_E)
@@ -135,7 +135,7 @@ def fig_erd():
 
 def fig_state():
     fig, ax = plt.subplots(figsize=(11, 5.8)); ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    ax.text(50, 96, "Report Lifecycle — State Machine", ha="center", fontsize=13, fontweight="bold", color=INK)
+    ax.text(50, 96, "Report Lifecycle - State Machine", ha="center", fontsize=13, fontweight="bold", color=INK)
     order = ["SUBMITTED", "UNDER_REVIEW", "ASSIGNED", "IN_PROGRESS", "RESOLVED"]
     xs = [9, 28, 47, 66, 85]
     W, H, y = 15, 10, 58
@@ -169,7 +169,7 @@ def fig_state():
 
 def fig_nlp():
     fig, ax = plt.subplots(figsize=(9.6, 6.0)); ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    ax.text(50, 96, "NLP Pipeline — analyze_report()", ha="center", fontsize=13, fontweight="bold", color=INK)
+    ax.text(50, 96, "NLP Pipeline - analyze_report()", ha="center", fontsize=13, fontweight="bold", color=INK)
     # top row
     box(ax, 6, 78, 24, 11, "Report text\n(description)", C_GRAY, C_GRAY_E, 9)
     box(ax, 34, 78, 26, 11, "1) Crisis keywords\n(weighted, threshold=3)\n→ is_urgent", C_NLP, C_NLP_E, 8.3)
@@ -199,7 +199,7 @@ def fig_nlp():
 
 def fig_seq_ws():
     fig, ax = plt.subplots(figsize=(9.6, 6.2)); ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    ax.text(50, 97, "Sequence — Status Change → Real-time Notification", ha="center", fontsize=12.5, fontweight="bold", color=INK)
+    ax.text(50, 97, "Sequence - Status Change → Real-time Notification", ha="center", fontsize=12.5, fontweight="bold", color=INK)
     actors = [("Staff\n(Admin UI)", 10), ("ReportViewSet\n.transition", 30),
               ("post_save\nsignal", 52), ("Channel Layer\n+ Consumer", 72), ("Citizen\nclient", 90)]
     for name, x in actors:
@@ -263,7 +263,57 @@ def fig_usecase():
     save(fig, "fig-usecase.png")
 
 
+def fig_tests():
+    """توزیع ۸۷۹ آزمون خودکار و پوشش کد لایه‌ی منطق، به تفکیک مجموعه."""
+    suites = ["Backend\n(Django)", "Citizen web\n(React)", "Admin web\n(React)",
+              "Mobile\n(Expo)"]
+    counts = [510, 157, 80, 132]
+    coverage = [96.0, 97.5, 97.1, 94.2]
+    colors = [C_API_E, C_CLIENT_E, C_NLP_E, C_DATA_E]
+    fills = [C_API, C_CLIENT, C_NLP, C_DATA]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.2))
+    fig.suptitle("UrbanHelper: Automated Test Suite", fontsize=13,
+                 fontweight="bold", color=INK, y=1.02)
+
+    bars = ax1.bar(range(len(suites)), counts, color=fills, edgecolor=colors,
+                   linewidth=1.6, width=0.62)
+    for b, c in zip(bars, counts):
+        ax1.text(b.get_x() + b.get_width() / 2, c + 12, str(c), ha="center",
+                 fontsize=10, fontweight="bold", color=INK)
+    ax1.set_xticks(range(len(suites)))
+    ax1.set_xticklabels(suites, fontsize=8.5)
+    ax1.set_ylabel("number of tests", fontsize=9)
+    ax1.set_ylim(0, 580)
+    ax1.set_title("Test count per suite  (total 879)", fontsize=10, color=INK)
+    ax1.spines[["top", "right"]].set_visible(False)
+    ax1.grid(axis="y", alpha=0.25, linestyle=":")
+    ax1.set_axisbelow(True)
+
+    bars = ax2.barh(range(len(suites)), coverage, color=fills, edgecolor=colors,
+                    linewidth=1.6, height=0.55)
+    for b, c in zip(bars, coverage):
+        ax2.text(c + 1.2, b.get_y() + b.get_height() / 2, f"{c:.1f}%",
+                 va="center", fontsize=9.5, fontweight="bold", color=INK)
+    ax2.axvline(90, color="#dc2626", linestyle="--", linewidth=1.2)
+    ax2.text(90, -0.85, "acceptance\nthreshold 90%", ha="center", fontsize=7.5,
+             color="#dc2626")
+    ax2.set_yticks(range(len(suites)))
+    ax2.set_yticklabels([s.replace("\n", " ") for s in suites], fontsize=8.5)
+    ax2.invert_yaxis()
+    ax2.set_xlim(0, 112)
+    ax2.set_xlabel("line coverage of the logic layer (%)", fontsize=9)
+    ax2.set_title("Code coverage per suite", fontsize=10, color=INK)
+    ax2.spines[["top", "right"]].set_visible(False)
+    ax2.grid(axis="x", alpha=0.25, linestyle=":")
+    ax2.set_axisbelow(True)
+
+    fig.tight_layout()
+    save(fig, "fig-tests.png")
+
+
 if __name__ == "__main__":
     print("Generating figures →", FIG)
-    fig_arch(); fig_deploy(); fig_erd(); fig_state(); fig_nlp(); fig_seq_ws(); fig_usecase()
+    fig_arch(); fig_deploy(); fig_erd(); fig_state(); fig_nlp(); fig_seq_ws()
+    fig_usecase(); fig_tests()
     print("Done.")
