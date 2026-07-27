@@ -1,0 +1,107 @@
+# =====================================================================
+# thesis/config.yaml
+# پیکربندی ساخت گزارش پایان‌نامه (Word/.docx)
+#
+# ✅ مقادیر این فایل از «قالب و شیوه‌نامه‌ی نگارش پایان‌نامه یا رساله‌ی
+#    دانشگاه صنعتی امیرکبیر» استخراج شده‌اند (فایل
+#    «قالب_و_شیوه‌نامه_ی_نگارش_امیرکبیر.pdf» در ریشه‌ی مخزن).
+#    ارجاع‌های داخل کامنت‌ها به شماره‌ی بخش همان شیوه‌نامه است.
+# =====================================================================
+
+meta:
+  title_fa: "شهریاور: برنامه کاربردی هوشمند برای بهبود خدمات شهری و افزایش تعامل شهروندان"
+  title_en: "UrbanHelper: A Smart Application for Enhancing Urban Services and Citizen Engagement"
+  student_name_fa: "محمد یاسر ظریفی"
+  student_name_en: "Mohammad Yaser Zarifi"
+  student_id: "۴۰۰۳۱۱۰۲"
+  supervisor_fa: "دکتر معصومه طارمی‌راد"
+  supervisor_en: "Dr. Masoumeh Taromi-Rad"
+  faculty_fa: "دانشکده مهندسی کامپیوتر"
+  faculty_en: "Department of Computer Engineering"
+  university_fa: "دانشگاه صنعتی امیرکبیر"
+  university_sub_fa: "(پلی‌تکنیک تهران)"
+  university_en: "Amirkabir University of Technology"
+  university_sub_en: "(Tehran Polytechnic)"
+  degree_fa: "کارشناسی"
+  major_fa: "مهندسی کامپیوتر"
+  defense_term_fa: "تابستان ۱۴۰۵"
+  defense_term_en: "Summer 2026"
+
+# --- بخش ۴-۱ و ۴-۲ شیوه‌نامه: قلم‌های فارسی و انگلیسی -----------------
+# قاعده: قلم لاتین همیشه «یک شماره کوچک‌تر» از قلم فارسیِ متناظر است.
+fonts:
+  body_fa: "B Nazanin"        # جدول ۴-۱: تمام سبک‌های فارسی
+  body_latin: "Times New Roman"   # جدول ۴-۲
+  code: "Courier New"         # جدول ۴-۲، سبک Code
+  code_size_pt: 10
+  code_comment_fa: "B Nazanin"
+  code_comment_size_pt: 11
+
+sizes_fa:                     # اندازه‌ی قلم فارسی (جدول ۴-۱)
+  body: 14                    # Normal — متن
+  h1: 20                      # Heading 1 — عنوان فصل (Bold)
+  h2: 18                      # Heading 2 — زیرفصل ۱ (Bold)
+  h3: 16                      # Heading 3 — زیرفصل ۲ (Bold)
+  h4: 14                      # Heading 4 — زیرفصل ۳ (Bold)
+  h5: 13                      # Heading 5 — زیرفصل ۴ (Bold)
+  caption: 13                 # Pic Title / Table Title (Bold)
+  in_table: 13                # In Table
+  reference: 13               # FarsiRef
+  footnote: 11
+
+latin_size_delta: 1           # «اندازه قلم‌های انگلیسی یک شماره کوچک‌تر از فارسی»
+
+# --- بخش ۴-۴-۱: فاصله‌ی کلی از چهار طرف کاغذ (چاپ یک‌رو) --------------
+margins_cm:
+  top: 3.0                    # بالا ۳ سانتی‌متر
+  bottom: 3.0                 # پایین ۳ سانتی‌متر
+  right: 3.0                  # راست ۳ سانتی‌متر (لبه‌ی صحافی در سند راست‌به‌چپ)
+  left: 2.5                   # چپ ۲/۵ سانتی‌متر
+  header_cm: 1.5
+  footer_cm: 1.5
+
+# --- بخش ۴-۴-۲ و ۴-۴-۳: فاصله‌های عمودی --------------------------------
+line_spacing: 1.5             # «فاصله‌ی بین خط‌ها بایستی ۱/۵ باشد»
+paragraph_space_before_pt: 6  # «پیش از هر بند یک فاصله‌ی عمودی به اندازه ۶pt»
+paragraph_indent_cm: 0        # شیوه‌نامه از تورفتگیِ خودکار پرهیز می‌کند (بخش ۵-۵)
+paragraph_alignment: "both"   # justify
+
+heading_space_before_pt:      # فاصله‌ی عمودی پیش از عنوان‌ها (بخش ۴-۴-۳)
+  chapter: 30                 # پیش از عنوان فصل
+  h2: 27                      # بخش
+  h3: 20                      # زیربخش
+  h4: 15                      # زیرزیربخش
+  h5: 15
+
+# --- شماره‌گذاری ------------------------------------------------------
+digits: "فارسی"               # ارقام فارسی در سراسر سند
+numbering: "فصل-ترتیب"        # شکل ۴-۱ = شکل ۱ از فصل ۴ (بخش ۴-۹)
+appendix_prefix: "پ"          # شماره‌گذاری پیوست: شکل پ-۱، جدول پ-۱، رابطه‌ی (پ-۱)
+caption_position:
+  figure: "زیر"               # «عنوان شکل در پایین آن»
+  table: "بالا"               # «عنوان جدول در بالای جدول»
+caption_separator: " "        # «شکل ۴-۱ عنوان» — بدون دونقطه، فقط یک فاصله
+figure_box: true              # «توصیه می‌شود تمام شکل‌ها و جدول‌ها با کادر بیرونی جدا شوند»
+
+page_numbers:
+  front_matter: "arabicAlpha" # صفحات مقدماتی: أ، ب، ت، ث، ج، ح
+  body: "decimal"             # متن اصلی: ۱، ۲، ۳ (با ارقام فارسی نمایش داده می‌شود)
+  position: "پایین-وسط"       # «شماره‌ی صفحه در پائین و وسط هر صفحه» (بخش ۵-۱۲)
+
+header:                       # بخش ۴-۸ و ۵-۱۲
+  enabled: true
+  content: "عنوان فصل"        # «در سمت راست سربرگ، عنوان هر فصل نوشته می‌شود»
+  rule_below: true            # «در زیر این قسمت یک خط پررنگ قرار می‌گیرد»
+
+toc:
+  title: "فهرست عنوان‌ها"      # عنوان‌های شیوه‌نامه (نه «فهرست مطالب»)
+  figures_title: "فهرست شکل‌ها"
+  tables_title: "فهرست جدول‌ها"
+  symbols_title: "فهرست نمادها"
+  levels: 3
+
+references_title: "مرجع‌ها"    # شیوه‌نامه: «مرجع‌ها» (نه «منابع/مراجع»)
+appendix_title: "پیوست‌ها"
+citation_style: "عددی"        # ارجاع درون‌متنی به‌صورت [۱] و چند مرجع: [۱، ۲]
+
+code_max_inline_lines: 25     # کد بلندتر از این → پیوست

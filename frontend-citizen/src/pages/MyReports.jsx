@@ -30,6 +30,7 @@ import { useAuth } from '../hooks/useAuth.js'
 import { useReportSocket } from '../hooks/useReportSocket.js'
 import { useToast } from '../components/ui/Toast.jsx'
 import { useReportModal } from '../components/report/ReportModal.jsx'
+import { TrackByToken } from '../components/report/TrackByToken.jsx'
 
 function Photo({ src, label, tone, emptyLabel = 'بدون تصویر' }) {
   if (!src) {
@@ -67,13 +68,15 @@ export function MyReports() {
   const [loading, setLoading] = useState(true)
   const [netError, setNetError] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Map of reportId → guest token, so guests can open the live socket + refetch.
   const guestTokens = useMemo(() => {
     const map = {}
     for (const g of getGuestReports()) if (g.token) map[g.id] = g.token
     return map
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey])
 
   const load = useCallback(async () => {
     setNetError(false)
@@ -124,7 +127,14 @@ export function MyReports() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     load()
-  }, [load])
+  }, [load, refreshKey])
+
+  // A guest successfully re-attached a report via its token — refresh + focus it.
+  const handleTracked = useCallback((flat) => {
+    toast.push(`گزارش #${flat.id} به فهرست پیگیری افزوده شد.`, 'success')
+    setSelectedId(flat.id)
+    setRefreshKey((k) => k + 1)
+  }, [toast])
 
   const detail = useMemo(
     () => items.find((f) => String(f.id) === String(selectedId)),
@@ -181,6 +191,8 @@ export function MyReports() {
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
+
+      <TrackByToken onTracked={handleTracked} />
 
       {netError && (
         <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-coral-400/30 bg-coral-500/10 px-4 py-3 text-sm font-semibold text-coral-700 dark:text-coral-300">

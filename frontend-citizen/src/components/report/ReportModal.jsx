@@ -254,11 +254,22 @@ function ReportWizard({ onClose, titleId }) {
         <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           {result.offline
             ? 'به‌محض اتصال به اینترنت، گزارش شما به‌صورت خودکار ارسال می‌شود.'
-            : 'این گزارش به فهرست پیگیری شما افزوده شد. برای دنبال‌کردن زندهٔ وضعیت، توکن مهمان را نیز نگه دارید.'}
+            : 'این گزارش به فهرست پیگیری شما افزوده شد. برای پیگیری از دستگاهی دیگر، شمارهٔ گزارش و توکن مهمان زیر را نگه دارید.'}
         </p>
 
+        {!result.offline && result.id && (
+          <div className="mx-auto mt-6 flex max-w-sm items-center justify-between gap-2 rounded-xl border border-beacon-400/30 bg-beacon-400/10 px-4 py-3 text-right">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              شمارهٔ گزارش:
+            </span>
+            <span className="tnum text-lg font-black text-ink-900 dark:text-white">
+              #{result.id}
+            </span>
+          </div>
+        )}
+
         {!result.offline && result.guestToken && (
-          <div className="card-inset mx-auto mt-6 max-w-sm p-4 text-right">
+          <div className="card-inset mx-auto mt-3 max-w-sm p-4 text-right">
             <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               توکن پیگیری مهمان:
             </p>

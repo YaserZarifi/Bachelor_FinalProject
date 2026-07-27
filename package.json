@@ -1,0 +1,5 @@
+{
+  "name": "urbanhelper",
+  "private": true,
+  "description": "UrbanHelper / شهریاور — monorepo root (backend, frontend-citizen, frontend-admin, mobile). Each app manages its own dependencies."
+}

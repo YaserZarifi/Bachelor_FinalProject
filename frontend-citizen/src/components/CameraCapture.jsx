@@ -74,7 +74,9 @@ export function CameraCapture({ onCapture, onClear, captured }) {
     setBusy(true)
     setError('')
     try {
-      // 1) Read the real device location *now*, at the moment of capture.
+      // 1) Read the real device location *now*, at the moment of capture. This
+      //    rejects coarse IP-derived fixes (see useGeolocation) so a VPN cannot
+      //    silently stamp the report with its exit-node city.
       const loc = await geo.request()
 
       // 2) Freeze the current video frame to a JPEG blob.
@@ -102,8 +104,10 @@ export function CameraCapture({ onCapture, onClear, captured }) {
         capturedAt,
         integrityHash,
       })
-    } catch {
-      setError(geo.error || 'ثبت تصویر ناموفق بود. لطفاً دوباره تلاش کنید.')
+    } catch (err) {
+      // Surface the geolocation hook's own diagnosis (VPN / IP-derived fix,
+      // permission denied, timeout) instead of a generic capture failure.
+      setError(err?.message || geo.error || 'ثبت تصویر ناموفق بود. لطفاً دوباره تلاش کنید.')
     } finally {
       setBusy(false)
     }
@@ -219,7 +223,11 @@ export function CameraCapture({ onCapture, onClear, captured }) {
       ) : (
         <button type="button" onClick={snap} disabled={busy} className="btn-civic w-full">
           <Aperture className="h-5 w-5" />
-          {busy ? 'در حال ثبت و قفل موقعیت…' : 'ثبت تصویر و موقعیت'}
+          {busy
+            ? geo.progress != null
+              ? `در حال قفل موقعیت… دقت فعلی ±${Math.round(geo.progress).toLocaleString('fa-IR')} متر`
+              : 'در حال ثبت و قفل موقعیت…'
+            : 'ثبت تصویر و موقعیت'}
         </button>
       )}
     </div>

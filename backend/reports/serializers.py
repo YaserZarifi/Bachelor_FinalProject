@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
@@ -84,11 +85,37 @@ class ReportSerializer(GeoFeatureModelSerializer):
         cat = getattr(obj, "category", None)
         return cat.name if cat else None
 
+    def validate_gps_accuracy(self, value):
+        """Refuse coordinates too coarse to have come from GPS.
+
+        The client already filters these out, but the check has to exist here
+        too: a report created straight against the API (or by a patched client)
+        behind a VPN would otherwise store the exit node's city as the incident
+        location. Only enforced on create — the field is immutable afterwards.
+        """
+        if self.instance is None and value is not None:
+            ceiling = getattr(settings, "MAX_REPORT_GPS_ACCURACY_M", 200)
+            if value > ceiling:
+                raise serializers.ValidationError(
+                    f"دقت موقعیت (±{round(value)} متر) برای ثبت گزارش کافی نیست. "
+                    "موقعیت باید از GPS دستگاه خوانده شود، نه از روی آدرس اینترنتی (IP). "
+                    "اگر VPN روشن است آن را خاموش کنید و دوباره تلاش کنید."
+                )
+        return value
+
     def validate(self, attrs):
         instance = getattr(self, "instance", None)
         request = self.context.get("request")
         user = getattr(request, "user", None)
         new_status = attrs.get("status")
+
+        # An in-app camera capture must carry a verifiable GPS radius; without
+        # one the accuracy gate above would be trivially bypassed by omission.
+        if instance is None:
+            if attrs.get("capture_source") == "CAMERA" and attrs.get("gps_accuracy") is None:
+                raise serializers.ValidationError(
+                    {"gps_accuracy": "برای ثبت تصویر دوربین، دقت موقعیت GPS الزامی است."}
+                )
 
         if user and user.is_staff and instance is not None and new_status is not None:
             old = instance.status

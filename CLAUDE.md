@@ -16,6 +16,7 @@ The Django apps split by **responsibility, not by the usual Django convention**:
 - **`civic_api/`** — the **live HTTP + WebSocket layer**. This is where the real `ReportViewSet`/`CategoryViewSet` (`viewsets.py`), permissions, guest-token logic, JWT register (`views_auth.py`), and the Channels consumers live.
 - **`reports/`** — **models, serializers, admin only**. ⚠️ `reports/views.py` and `reports/urls.py` contain a *second, stubbed, dead* `ReportViewSet` (with literal `...`). It is NOT wired up — `core/urls.py` includes `reports.urls`, which imports the viewsets from **`civic_api`**. Always edit `civic_api/viewsets.py` for API behavior; ignore `reports/views.py`.
 - **`nlp/`** — async report analysis (see NLP section).
+- **`pushnotify/`** — **mobile push notifications**. Stores Expo push tokens (`PushDevice`) + per-report guest bindings (`ReportSubscription`); registration at `/api/push/register/` & `/unregister/`. A Celery task (`pushnotify.tasks.send_status_push`) sends Expo pushes when a report's `status` changes — detected by a `pre_save`/`post_save` pair in `civic_api/signals.py`. Stdlib-only Expo client in `pushnotify/expo.py`.
 - **`core/`** — settings, URL routing, ASGI (Daphne), Celery app.
 
 Key cross-cutting flows:
@@ -33,6 +34,9 @@ Key cross-cutting flows:
 - **`frontend-admin/`** — staff dashboard. **MUI** (with `stylis-plugin-rtl`) + Leaflet (`react-leaflet-cluster`) map + Recharts. Requires an `is_staff` account to log in.
 
 Both store JWTs in `localStorage` and attach `Authorization: Bearer` via an axios interceptor.
+
+### Mobile (`mobile/`) — Expo SDK 52 + expo-router, citizen app
+A third citizen client built in React Native. Reuses the web app's *Aurora Glass* identity via a JS design-token system (`src/theme.js`) — no Tailwind; RTL/Persian, Vazirmatn. **Guest-first**: report anonymously, optional JWT login. Mirrors web flows — in-app `expo-camera` capture (no gallery), `expo-location` GPS, an `expo-crypto` integrity hash, and an offline queue (`src/api/offline.js`, AsyncStorage + `expo-file-system`). Live status over the same WebSocket (`src/hooks/useReportSocket.js`) **plus** Expo push (registered via `src/notifications/`). Set `EXPO_PUBLIC_API_BASE`/`EXPO_PUBLIC_WS_BASE` to your LAN IP for device testing. See `mobile/README.md`. The web landing page advertises it via `frontend-citizen/src/components/DownloadApp.jsx` (`#download`).
 
 ## Commands
 

@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'reports',
 
     'nlp',
+
+    'pushnotify',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +85,13 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
 # Used by civic_api guest tokens (same host as Channels Redis)
 REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
+
+# Trusted-capture: largest GPS error radius (metres) a new report may carry.
+# A real GNSS fix is 3–30 m and Wi-Fi trilateration 20–150 m, while a position
+# derived from the client's IP address — what a location provider falls back to
+# behind a VPN — is kilometre-scale. Rejecting coarse fixes therefore keeps
+# VPN-exit-node coordinates out of the database no matter what a client sends.
+MAX_REPORT_GPS_ACCURACY_M = float(os.environ.get("MAX_REPORT_GPS_ACCURACY_M", "200"))
 
 # Celery Configuration
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
