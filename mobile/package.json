@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@vitest/coverage-v8": "^3.2.7",
     "babel-preset-expo": "~54.0.0",
     "vitest": "^3.2.7"
   },

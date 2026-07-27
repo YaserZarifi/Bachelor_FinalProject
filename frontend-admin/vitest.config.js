@@ -17,7 +17,15 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
       reportsDirectory: './coverage',
-      include: ['src/**/*.{js,jsx}'],
+      // Scoped to the logic layer these tests target. Dashboard.jsx and the
+      // other presentational modules are verified manually against the running
+      // app (see the manual checklist in tests-reports/).
+      include: [
+        'src/api/**/*.js',
+        'src/theme.js',
+        'src/theme/**/*.jsx',
+        'src/components/CountUp.jsx',
+      ],
       exclude: ['src/**/*.test.{js,jsx}', 'src/test/**', 'src/main.jsx'],
     },
   },

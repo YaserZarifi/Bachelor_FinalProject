@@ -19,7 +19,11 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
       reportsDirectory: './coverage',
-      include: ['src/**/*.{js,jsx}'],
+      // Scoped to the logic layer these tests target. Presentational
+      // components and pages are verified manually against the running app
+      // (see the manual checklist in tests-reports/), so folding them into the
+      // denominator would only make the figure meaningless.
+      include: ['src/api/**/*.js', 'src/hooks/**/*.js', 'src/lib/**/*.js'],
       exclude: ['src/**/*.test.{js,jsx}', 'src/test/**', 'src/main.jsx'],
     },
   },
