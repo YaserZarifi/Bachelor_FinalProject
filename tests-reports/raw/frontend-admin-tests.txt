@@ -1,0 +1,95 @@
+npm notice run frontend-admin@0.0.0 npx
+npm notice run vitest run --config vitest.config.js --reporter=verbose
+
+ RUN  v3.2.7 C:/Users/Dell/Desktop/Amirkabir/Final Project/frontend-admin
+
+ ✓ src/lifecycle-contract.test.js > ALLOWED_NEXT mirrors the backend state machine > covers every status 15ms
+ ✓ src/lifecycle-contract.test.js > ALLOWED_NEXT mirrors the backend state machine > offers exactly the transitions the API permits 4ms
+ ✓ src/lifecycle-contract.test.js > ALLOWED_NEXT mirrors the backend state machine > offers nothing at all once a report is closed 2ms
+ ✓ src/lifecycle-contract.test.js > ALLOWED_NEXT mirrors the backend state machine > never offers a status as a move to itself 9ms
+ ✓ src/lifecycle-contract.test.js > ALLOWED_NEXT mirrors the backend state machine > never offers a status the backend does not know 5ms
+ ✓ src/lifecycle-contract.test.js > ALLOWED_NEXT mirrors the backend state machine > does not offer RESOLVED straight from SUBMITTED 1ms
+ ✓ src/lifecycle-contract.test.js > STATUS_HEX matches the shared palette > colours every status 2ms
+ ✓ src/lifecycle-contract.test.js > STATUS_HEX matches the shared palette > uses valid hex colours 3ms
+ ✓ src/lifecycle-contract.test.js > STATUS_HEX matches the shared palette > agrees with the citizen app on every status colour 2ms
+ ✓ src/lifecycle-contract.test.js > toLatLng tolerates both geometry encodings > reads a GeoJSON geometry object and flips to Leaflet order 2ms
+ ✓ src/lifecycle-contract.test.js > toLatLng tolerates both geometry encodings > parses the EWKT string the API actually returns 2ms
+ ✓ src/lifecycle-contract.test.js > toLatLng tolerates both geometry encodings > parses a bare WKT point 1ms
+ ✓ src/lifecycle-contract.test.js > toLatLng tolerates both geometry encodings > handles negative coordinates 1ms
+ ✓ src/lifecycle-contract.test.js > toLatLng tolerates both geometry encodings > returns null for a missing or unparsable geometry 1ms
+ ✓ src/theme/ColorModeContext.test.jsx > getInitialMode > defaults to dark for a first-time visitor 14ms
+ ✓ src/theme/ColorModeContext.test.jsx > getInitialMode > restores a saved light preference 4ms
+ ✓ src/theme/ColorModeContext.test.jsx > getInitialMode > restores a saved dark preference 2ms
+ ✓ src/theme/ColorModeContext.test.jsx > getInitialMode > ignores a corrupt stored value 2ms
+ ✓ src/theme/ColorModeContext.test.jsx > useProvideColorMode > starts from the stored preference 87ms
+ ✓ src/theme/ColorModeContext.test.jsx > useProvideColorMode > toggles from dark to light 17ms
+ ✓ src/theme/ColorModeContext.test.jsx > useProvideColorMode > toggles back to dark 14ms
+ ✓ src/theme/ColorModeContext.test.jsx > useProvideColorMode > persists the choice so it survives a reload 11ms
+ ✓ src/theme/ColorModeContext.test.jsx > useProvideColorMode > mirrors the mode onto the document element for Tailwind-style styling 12ms
+ ✓ src/theme/ColorModeContext.test.jsx > useProvideColorMode > keeps the context value referentially stable between renders 9ms
+ ✓ src/components/CountUp.test.jsx > CountUp > starts at zero 298ms
+ ✓ src/components/CountUp.test.jsx > CountUp > reaches exactly the target value 31ms
+ ✓ src/components/CountUp.test.jsx > CountUp > renders the number in Persian digits 16ms
+ ✓ src/components/CountUp.test.jsx > CountUp > groups thousands the Persian way 16ms
+ ✓ src/components/CountUp.test.jsx > CountUp > animates part-way at the mid-point rather than jumping 15ms
+ ✓ src/components/CountUp.test.jsx > CountUp > handles a zero value 12ms
+ ✓ src/components/CountUp.test.jsx > CountUp > treats a missing value as zero 9ms
+ ✓ src/components/CountUp.test.jsx > CountUp > treats a non-numeric value as zero rather than showing NaN 9ms
+ ✓ src/components/CountUp.test.jsx > CountUp > re-animates when the value changes after a refresh 16ms
+ ✓ src/components/CountUp.test.jsx > CountUp > stops the animation frame loop on unmount 13ms
+ ✓ src/api/interceptors.test.js > request interceptor > attaches the bearer token when a staff session exists 31ms
+ ✓ src/api/interceptors.test.js > request interceptor > sends no Authorization header before login 5ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > refreshes and replays the original request 12ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > stores the refreshed access token 7ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > replays with the refreshed token attached 5ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > returns the features of a FeatureCollection 18ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > keeps the full Feature envelope, unlike the citizen app 3ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > wraps a single Feature in an array 2ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > unwraps a DRF-paginated response 2ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > passes a plain array straight through 5ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > returns an empty array for null, undefined and unknown shapes 2ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > behaves identically to the citizen implementation on the same input 3ms
+ ✓ src/api/client.test.js > mediaUrl > prefixes a relative path with the API origin 2ms
+ ✓ src/api/client.test.js > mediaUrl > inserts a missing leading slash 2ms
+ ✓ src/api/client.test.js > mediaUrl > leaves an absolute url alone 2ms
+ ✓ src/api/client.test.js > mediaUrl > returns an empty string for a missing path 4ms
+ ✓ src/api/client.test.js > wsBaseUrl > derives a ws:// origin from the http API base 2ms
+ ✓ src/api/client.test.js > wsBaseUrl > carries no trailing slash 1ms
+ ✓ src/api/client.test.js > staff session storage > stores both tokens on login 3ms
+ ✓ src/api/client.test.js > staff session storage > accepts an access token without a refresh token 3ms
+ ✓ src/api/client.test.js > staff session storage > clears both tokens on logout 2ms
+ ✓ src/api/client.test.js > staff session storage > logging out twice is harmless 6ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > retries only once, so a dead session cannot loop 37ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > does not refresh without a stored refresh token 6ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > does not refresh a failed login attempt 6ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > clears the session when the refresh token is dead 7ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > redirects a dead session to the login page 9ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > passes a non-401 error straight through 6ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > passes a 403 through — a non-staff account is not a stale token 5ms
+ ✓ src/api/interceptors.test.js > silent refresh on 401 > leaves a successful response untouched 2ms
+stderr | src/theme.test.js > colour modes > renders an unknown mode with light surfaces rather than crashing
+MUI: The palette mode `sepia` is not supported.
+MUI: The palette mode `sepia` is not supported.
+
+ ✓ src/theme.test.js > direction and typography > is right-to-left 15ms
+ ✓ src/theme.test.js > direction and typography > is right-to-left in light mode too 5ms
+ ✓ src/theme.test.js > direction and typography > uses Vazirmatn as the primary font 4ms
+ ✓ src/theme.test.js > direction and typography > falls back to a system font stack 4ms
+ ✓ src/theme.test.js > colour modes > builds a dark theme 4ms
+ ✓ src/theme.test.js > colour modes > builds a light theme 5ms
+ ✓ src/theme.test.js > colour modes > defaults to dark when no mode is given 5ms
+ ✓ src/theme.test.js > colour modes > renders an unknown mode with light surfaces rather than crashing 21ms
+ ✓ src/theme.test.js > colour modes > exports a ready-made dark theme as the default 2ms
+ ✓ src/theme.test.js > colour modes > produces different surfaces per mode 10ms
+ ✓ src/theme.test.js > the shared Civic Signal palette > uses beacon amber as the primary accent 4ms
+ ✓ src/theme.test.js > the shared Civic Signal palette > keeps the accent identical across modes, so branding does not shift 5ms
+ ✓ src/theme.test.js > the shared Civic Signal palette > exposes success, error and info roles 3ms
+ ✓ src/theme.test.js > the shared Civic Signal palette > matches the citizen app status colours for resolved and in-progress 4ms
+ ✓ src/theme.test.js > theme stability > builds a fresh object each call, so mutations cannot leak 10ms
+ ✓ src/theme.test.js > theme stability > is deterministic for the same mode 6ms
+
+ Test Files  6 passed (6)
+      Tests  80 passed (80)
+   Start at  23:15:03
+   Duration  10.98s (transform 895ms, setup 8.20s, collect 5.71s, tests 1.02s, environment 17.74s, prepare 10.84s)
+

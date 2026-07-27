@@ -1,0 +1,207 @@
+npm notice run frontend-citizen@0.0.0 npx
+npm notice run vitest run --config vitest.config.js --reporter=verbose
+
+ RUN  v3.2.7 C:/Users/Dell/Desktop/Amirkabir/Final Project/frontend-citizen
+
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > renders coordinates at a fixed six decimal places 10ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > rounds the accuracy to whole metres 2ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > marks a missing accuracy as "na" rather than dropping the field 1ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > treats zero accuracy as a real value, not a missing one 1ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > is stable across repeated calls 1ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > changes when the latitude changes 4ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > changes when the timestamp changes 1ms
+ ✓ src/api/integrity.test.js > canonicalMeta — a reproducible string form > ignores sub-micro-degree noise below the six-decimal precision 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > produces a 64-character lowercase hex SHA-256 digest 16ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > is deterministic for identical inputs 4ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the image bytes change 4ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the location changes — the photo cannot be relocated 6ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the capture time changes 4ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the reported accuracy changes 4ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > handles an empty image without throwing 2ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > fits the backend column, which is 64 characters wide 2ms
+ ✓ src/hooks/useGeolocation.test.js > accuracy thresholds > resolves immediately at GNSS grade 25ms
+ ✓ src/hooks/useGeolocation.test.js > accuracy thresholds > never accepts anything coarser than the hard ceiling 4ms
+ ✓ src/hooks/useGeolocation.test.js > accuracy thresholds > matches the backend gate (MAX_REPORT_GPS_ACCURACY_M = 200) 4ms
+ ✓ src/api/offline.test.js > queueing a capture > starts with an empty queue 27ms
+ ✓ src/api/offline.test.js > queueing a capture > stores a capture for later 14ms
+ ✓ src/api/offline.test.js > queueing a capture > keeps the image as a real Blob rather than base64 11ms
+ ✓ src/api/offline.test.js > queueing a capture > preserves the bound location and timestamp exactly 6ms
+ ✓ src/api/offline.test.js > queueing a capture > preserves the integrity hash 4ms
+ ✓ src/api/offline.test.js > queueing a capture > records when the item was queued 5ms
+ ✓ src/api/offline.test.js > queueing a capture > normalises a missing category to null 5ms
+ ✓ src/api/offline.test.js > queueing a capture > keeps a chosen category 6ms
+ ✓ src/api/offline.test.js > queueing a capture > gives every queued item a distinct id 12ms
+stderr | src/api/offline.test.js > syncReports — replaying the queue > keeps an item in the queue when the upload fails
+Sync failed for item 1785177894804-1 Error: offline
+    at C:\Users\Dell\Desktop\Amirkabir\Final Project\frontend-citizen\src\api\offline.test.js:220:32
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+    at runSuite (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/api/offline.test.js > queueing a capture > queues several captures independently 7ms
+ ✓ src/api/offline.test.js > known issues > ⚠️ two captures queued in the same millisecond overwrite each other 7ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > encodes the location as WKT in lng-lat order 5ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > always declares the capture source as the in-app camera 2ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > sends the description and category 2ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > rounds the GPS accuracy to whole metres for the backend gate 2ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > sends the capture timestamp and integrity hash 3ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > attaches the image under the field the API expects 3ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > omits the category when none was chosen 2ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > omits the accuracy when it is unknown 1ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > keeps a zero accuracy rather than treating it as missing 2ms
+ ✓ src/api/offline.test.js > buildReportFormData — the multipart payload > omits the hash when none was computed 1ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > does nothing when the queue is empty 9ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > uploads every queued capture 11ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > posts to the reports endpoint as multipart 4ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > removes an item from the queue once it is accepted 4ms
+stderr | src/api/offline.test.js > syncReports — replaying the queue > a failing item does not block the others
+Sync failed for item 1785177894845-1 Error: offline
+    at C:\Users\Dell\Desktop\Amirkabir\Final Project\frontend-citizen\src\api\offline.test.js:228:36
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+    at runSuite (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/hooks/useGeolocation.test.js > acquiring a fix > resolves as soon as a GNSS-grade fix arrives 109ms
+ ✓ src/hooks/useGeolocation.test.js > acquiring a fix > returns an ISO timestamp with the fix 14ms
+ ✓ src/hooks/useGeolocation.test.js > acquiring a fix > exposes the accepted fix on the hook 15ms
+ ✓ src/hooks/useGeolocation.test.js > acquiring a fix > keeps refining while fixes stay coarse, then settles at timeout 20ms
+ ✓ src/hooks/useGeolocation.test.js > acquiring a fix > keeps only the sharpest fix seen 14ms
+ ✓ src/hooks/useGeolocation.test.js > acquiring a fix > reports refinement progress while acquiring 9ms
+stderr | src/api/offline.test.js > syncReports — replaying the queue > a retry after connectivity returns clears the queue
+Sync failed for item 1785177894856-1 Error: offline
+    at C:\Users\Dell\Desktop\Amirkabir\Final Project\frontend-citizen\src\api\offline.test.js:238:32
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+    at runSuite (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > keeps an item in the queue when the upload fails 40ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > a failing item does not block the others 11ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > a retry after connectivity returns clears the queue 10ms
+ ✓ src/api/offline.test.js > syncReports — replaying the queue > sends the stored capture metadata verbatim, not re-derived values 6ms
+ ✓ src/lib/status.test.js > STATUS_ORDER > matches the backend lifecycle exactly, in order 13ms
+ ✓ src/lib/status.test.js > STATUS_ORDER > starts at SUBMITTED and ends at CLOSED 3ms
+ ✓ src/lib/status.test.js > STATUS_ORDER > contains no duplicates 2ms
+ ✓ src/lib/status.test.js > STATUS_META > describes every status 2ms
+ ✓ src/lib/status.test.js > STATUS_META > uses the same Persian labels as the backend 2ms
+ ✓ src/lib/status.test.js > STATUS_META > gives every status an icon, a hex colour and chip classes 5ms
+ ✓ src/lib/status.test.js > STATUS_META > styles every chip for both light and dark mode 2ms
+ ✓ src/lib/status.test.js > STATUS_META > colours RESOLVED with the civic emerald 1ms
+ ✓ src/lib/status.test.js > STATUS_META > gives closed reports a muted slate colour 1ms
+ ✓ src/lib/status.test.js > statusMeta > returns the entry for a known status 1ms
+ ✓ src/lib/status.test.js > statusMeta > falls back to SUBMITTED for an unknown status 1ms
+ ✓ src/lib/status.test.js > statusMeta > falls back for null and undefined 1ms
+ ✓ src/lib/status.test.js > statusIndex > positions each status on the line 1ms
+ ✓ src/lib/status.test.js > statusIndex > returns −1 for an unknown status 1ms
+ ✓ src/lib/status.test.js > statusIndex > increases monotonically along the lifecycle 1ms
+ ✓ src/hooks/useGeolocation.test.js > rejecting IP-derived fixes > rejects a kilometre-scale fix even though one arrived 134ms
+ ✓ src/hooks/useGeolocation.test.js > rejecting IP-derived fixes > explains VPNs in the Persian error message 13ms
+ ✓ src/hooks/useGeolocation.test.js > rejecting IP-derived fixes > accepts a fix exactly at the ceiling 11ms
+ ✓ src/hooks/useGeolocation.test.js > rejecting IP-derived fixes > rejects a fix just past the ceiling 12ms
+ ✓ src/hooks/useGeolocation.test.js > failure paths > rejects when the device has no geolocation at all 11ms
+ ✓ src/hooks/useGeolocation.test.js > failure paths > rejects with a permission message when access is denied 9ms
+ ✓ src/hooks/useGeolocation.test.js > failure paths > rejects when nothing at all arrives before the timeout 10ms
+ ✓ src/hooks/useGeolocation.test.js > failure paths > ignores a late watch error once a usable fix exists 8ms
+ ✓ src/hooks/useGeolocation.test.js > resource cleanup > clears the watch once a fix is accepted 11ms
+ ✓ src/hooks/useGeolocation.test.js > resource cleanup > clears the watch when the component unmounts 8ms
+ ✓ src/hooks/useGeolocation.test.js > resource cleanup > does not resolve twice if fixes keep arriving 11ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > returns the features of a FeatureCollection 17ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > wraps a single Feature in an array 5ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > unwraps a DRF-paginated response 2ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > passes a plain array straight through 2ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > returns an empty array for null, undefined and unknown shapes 2ms
+ ✓ src/api/client.test.js > flattenFeatures — the GeoJSON list envelope > returns an empty array for a FeatureCollection with no features array 1ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > lifts the id out of the envelope 2ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > reads longitude from coordinate 0 and latitude from coordinate 1 1ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > spreads the properties onto the result 1ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > returns null for a missing feature 1ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > returns an already-flat object unchanged 1ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > leaves lat/lng undefined when the geometry is absent 1ms
+ ✓ src/api/client.test.js > flattenFeature — collapsing one Feature for the UI > ⚠️ cannot read coordinates from the EWKT string the API actually sends 2ms
+ ✓ src/api/client.test.js > mediaUrl > prefixes a relative path with the API origin 2ms
+ ✓ src/api/client.test.js > mediaUrl > inserts a missing leading slash 2ms
+ ✓ src/api/client.test.js > mediaUrl > leaves an absolute http url alone 1ms
+ ✓ src/api/client.test.js > mediaUrl > returns an empty string for a missing path 1ms
+ ✓ src/api/client.test.js > wsBaseUrl > derives a ws:// origin from the http API base 8ms
+ ✓ src/api/client.test.js > wsBaseUrl > carries no trailing slash, so paths can be appended directly 1ms
+ ✓ src/api/client.test.js > decodeJwt > decodes the payload of a well-formed token 3ms
+ ✓ src/api/client.test.js > decodeJwt > decodes non-ASCII claims 1ms
+ ✓ src/api/client.test.js > decodeJwt > returns null for a malformed token 1ms
+ ✓ src/api/client.test.js > decodeJwt > returns null for an empty token 1ms
+ ✓ src/api/client.test.js > decodeJwt > never throws on hostile input 6ms
+ ✓ src/api/client.test.js > token storage and the auth signal > reports "not authenticated" with no token 3ms
+ ✓ src/api/client.test.js > token storage and the auth signal > stores both tokens on login 7ms
+ ✓ src/api/client.test.js > token storage and the auth signal > accepts an access token without a refresh token 2ms
+ ✓ src/api/client.test.js > token storage and the auth signal > clears both tokens on logout 3ms
+ ✓ src/api/interceptors.test.js > request interceptor > attaches the bearer token when signed in 30ms
+ ✓ src/api/interceptors.test.js > request interceptor > sends no Authorization header when signed out 4ms
+ ✓ src/api/interceptors.test.js > request interceptor > picks up a token stored after the client was created 5ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > refreshes and replays the original request 15ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > calls the documented refresh endpoint with the stored refresh token 6ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > stores the new access token 5ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > stores a rotated refresh token when the server sends one 4ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > replays the request with the refreshed token 4ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > retries only once, so an expired refresh cannot loop 38ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > does not attempt a refresh when there is no refresh token 6ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > does not try to refresh a failing login request 6ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > signs the user out when the refresh itself fails 8ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > passes a non-401 error straight through 5ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > passes a 403 straight through — that is a permission problem, not a stale token 5ms
+ ✓ src/api/interceptors.test.js > response interceptor — silent refresh on 401 > leaves a successful response untouched 2ms
+ ✓ src/api/client.test.js > token storage and the auth signal > emits auth-changed on login so the navbar re-renders 15ms
+ ✓ src/api/client.test.js > token storage and the auth signal > emits auth-changed on logout 5ms
+ ✓ src/api/client.test.js > currentUsername > reads the username claim from the stored token 3ms
+ ✓ src/api/client.test.js > currentUsername > falls back to a Persian "user #id" label 2ms
+ ✓ src/api/client.test.js > currentUsername > returns null when nobody is signed in 1ms
+ ✓ src/api/client.test.js > currentUsername > returns null for a token with neither claim 1ms
+ ✓ src/api/client.test.js > guest report tracking > starts empty 4ms
+ ✓ src/api/client.test.js > guest report tracking > remembers a filed report and its token 3ms
+ ✓ src/api/client.test.js > guest report tracking > stamps each entry with a save time 2ms
+ ✓ src/api/client.test.js > guest report tracking > puts the newest report first 3ms
+ ✓ src/api/client.test.js > guest report tracking > replaces rather than duplicates an existing report 4ms
+ ✓ src/api/client.test.js > guest report tracking > keeps at most 100 reports 61ms
+ ✓ src/api/client.test.js > guest report tracking > survives corrupt storage without throwing 2ms
+ ✓ src/hooks/useAuth.test.jsx > useAuth > starts signed out when no token is stored 115ms
+ ✓ src/hooks/useAuth.test.jsx > useAuth > starts signed in when a token is already stored 15ms
+ ✓ src/hooks/useAuth.test.jsx > useAuth > reacts to a login happening elsewhere in the app 28ms
+ ✓ src/hooks/useAuth.test.jsx > useAuth > reacts to a logout 15ms
+ ✓ src/hooks/useAuth.test.jsx > useAuth > reacts to a sign-in performed in another browser tab 10ms
+ ✓ src/hooks/useAuth.test.jsx > useAuth > stops listening once unmounted 18ms
+ ✓ src/hooks/useReportSocket.test.js > connecting > does not open a socket without a report id 157ms
+ ✓ src/hooks/useReportSocket.test.js > connecting > connects to the report channel 23ms
+ ✓ src/hooks/useReportSocket.test.js > connecting > uses the ws:// origin derived from the API base 12ms
+ ✓ src/hooks/useReportSocket.test.js > connecting > authenticates with the guest token when signed out 12ms
+ ✓ src/hooks/useReportSocket.test.js > connecting > prefers the JWT when the citizen is signed in 18ms
+ ✓ src/hooks/useReportSocket.test.js > connecting > reports "live" once the socket opens 29ms
+ ✓ src/hooks/useReportSocket.test.js > receiving updates > forwards a parsed status event to the callback 18ms
+ ✓ src/hooks/useReportSocket.test.js > receiving updates > forwards the initial subscription confirmation 11ms
+ ✓ src/hooks/useReportSocket.test.js > receiving updates > ignores a malformed frame instead of crashing the page 16ms
+ ✓ src/hooks/useReportSocket.test.js > receiving updates > always calls the latest callback, not a stale closure 10ms
+ ✓ src/hooks/useReportSocket.test.js > reconnecting > marks the hook as not live when the socket drops 24ms
+ ✓ src/hooks/useReportSocket.test.js > reconnecting > retries after a backoff delay 18ms
+ ✓ src/hooks/useReportSocket.test.js > reconnecting > backs off further on repeated failures 10ms
+ ✓ src/hooks/useReportSocket.test.js > reconnecting > stops reconnecting once the component unmounts 9ms
+ ✓ src/hooks/useReportSocket.test.js > reconnecting > opens a fresh socket when the report changes 7ms
+
+ Test Files  8 passed (8)
+      Tests  157 passed (157)
+   Start at  23:14:40
+   Duration  15.43s (transform 1.85s, setup 10.98s, collect 7.83s, tests 1.77s, environment 65.48s, prepare 21.37s)
+

@@ -1,0 +1,36 @@
+npm notice run frontend-admin@0.0.0 test:coverage
+npm notice run vitest run --coverage --config vitest.config.js
+
+ RUN  v3.2.7 C:/Users/Dell/Desktop/Amirkabir/Final Project/frontend-admin
+      Coverage enabled with v8
+
+ ✓ src/lifecycle-contract.test.js (14 tests) 15ms
+ ✓ src/theme/ColorModeContext.test.jsx (10 tests) 64ms
+ ✓ src/components/CountUp.test.jsx (10 tests) 144ms
+ ✓ src/api/interceptors.test.js (13 tests) 62ms
+ ✓ src/api/client.test.js (17 tests) 22ms
+stderr | src/theme.test.js > colour modes > renders an unknown mode with light surfaces rather than crashing
+MUI: The palette mode `sepia` is not supported.
+MUI: The palette mode `sepia` is not supported.
+
+ ✓ src/theme.test.js (16 tests) 30ms
+
+ Test Files  6 passed (6)
+      Tests  80 passed (80)
+   Start at  23:13:47
+   Duration  4.67s (transform 229ms, setup 2.47s, collect 1.62s, tests 336ms, environment 14.03s, prepare 1.67s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   97.13 |    93.82 |   86.66 |   97.13 |                   
+ src               |     100 |      100 |     100 |     100 |                   
+  theme.js         |     100 |      100 |     100 |     100 |                   
+ src/api           |   95.34 |     92.1 |     100 |   95.34 |                   
+  client.js        |   95.34 |     92.1 |     100 |   95.34 | 12-13,33-34       
+ src/components    |     100 |      100 |     100 |     100 |                   
+  CountUp.jsx      |     100 |      100 |     100 |     100 |                   
+ src/theme         |   85.18 |    84.61 |      60 |   85.18 |                   
+  ...deContext.jsx |   85.18 |    84.61 |      60 |   85.18 | 6-7,15,27         
+-------------------|---------|----------|---------|---------|-------------------

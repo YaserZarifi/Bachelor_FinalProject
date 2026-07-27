@@ -1,0 +1,35 @@
+npm notice run urbanhelper-mobile@1.0.0 test:coverage
+npm notice run vitest run --coverage --config vitest.config.js
+
+ RUN  v3.2.7 C:/Users/Dell/Desktop/Amirkabir/Final Project/mobile
+      Coverage enabled with v8
+
+ ✓ src/constants/status.test.js (10 tests) 10ms
+ ✓ src/api/guestStore.test.js (15 tests) 30ms
+ ✓ src/api/integrity.test.js (11 tests) 22ms
+ ✓ src/api/auth.test.js (14 tests) 37ms
+ ✓ src/api/client.test.js (32 tests) 29ms
+ ✓ src/api/reports.test.js (14 tests) 9ms
+ ✓ src/api/offline.test.js (36 tests) 392ms
+
+ Test Files  7 passed (7)
+      Tests  132 passed (132)
+   Start at  23:13:54
+   Duration  1.37s (transform 358ms, setup 0ms, collect 1.47s, tests 530ms, environment 3ms, prepare 1.90s)
+
+ % Coverage report from v8
+----------------|---------|----------|---------|---------|----------------------
+File            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s    
+----------------|---------|----------|---------|---------|----------------------
+All files       |   94.18 |    92.25 |   91.11 |   94.18 |                      
+ api            |   93.85 |    92.19 |    90.9 |   93.85 |                      
+  auth.js       |     100 |      100 |     100 |     100 |                      
+  client.js     |   90.16 |     85.1 |     100 |   90.16 | ...68,70-71,80,83-84 
+  guestStore.js |     100 |      100 |     100 |     100 |                      
+  integrity.js  |     100 |      100 |     100 |     100 |                      
+  offline.js    |   99.07 |    93.44 |     100 |   99.07 | 122-123              
+  push.js       |     100 |      100 |     100 |     100 |                      
+  reports.js    |   63.41 |      100 |      20 |   63.41 | 4-6,9-11,14-17,42-46 
+ constants      |     100 |      100 |     100 |     100 |                      
+  status.js     |     100 |      100 |     100 |     100 |                      
+----------------|---------|----------|---------|---------|----------------------

@@ -1,0 +1,143 @@
+npm notice run urbanhelper-mobile@1.0.0 npx
+npm notice run vitest run --config vitest.config.js --reporter=verbose
+
+ RUN  v3.2.7 C:/Users/Dell/Desktop/Amirkabir/Final Project/mobile
+
+ ✓ src/constants/status.test.js > STATUS_ORDER > matches the backend lifecycle exactly, in order 3ms
+ ✓ src/constants/status.test.js > STATUS_ORDER > contains no duplicates 1ms
+ ✓ src/constants/status.test.js > STATUS_LABEL > labels every status 0ms
+ ✓ src/constants/status.test.js > STATUS_LABEL > uses the same Persian wording as the backend and the push worker 0ms
+ ✓ src/constants/status.test.js > STATUS_COLOR > colours every status 0ms
+ ✓ src/constants/status.test.js > STATUS_COLOR > uses valid hex colours 1ms
+ ✓ src/constants/status.test.js > STATUS_COLOR > agrees with the web clients on resolved and in-progress 0ms
+ ✓ src/constants/status.test.js > statusIndex > positions each status on the timeline 0ms
+ ✓ src/constants/status.test.js > statusIndex > clamps an unknown status to the start instead of returning −1 0ms
+ ✓ src/constants/status.test.js > statusIndex > increases monotonically along the lifecycle 0ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > starts empty 3ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > stores the report and its token 2ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > stamps each entry with an ISO save time 1ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > puts the newest report first 1ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > replaces rather than duplicates an existing report 2ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > keeps at most 100 reports 7ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > drops the oldest entries when the cap is reached 6ms
+ ✓ src/api/guestStore.test.js > remembering an anonymous report > survives corrupt storage without throwing 0ms
+ ✓ src/api/guestStore.test.js > looking a token back up > finds the token for a known report 0ms
+ ✓ src/api/guestStore.test.js > looking a token back up > returns null for an unknown report 0ms
+ ✓ src/api/guestStore.test.js > looking a token back up > returns null when nothing has been stored yet 0ms
+ ✓ src/api/guestStore.test.js > tracking status changes > updates the cached status of one report 0ms
+ ✓ src/api/guestStore.test.js > tracking status changes > leaves the other reports untouched 1ms
+ ✓ src/api/guestStore.test.js > tracking status changes > never drops the token while updating the status 0ms
+ ✓ src/api/guestStore.test.js > tracking status changes > updating an unknown report changes nothing 0ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > produces a 64-character lowercase hex digest 5ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > is deterministic for identical inputs 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the image contents change 2ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the latitude changes — the photo cannot be relocated 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the longitude changes 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the capture time changes 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > changes when the reported accuracy changes 4ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > rounds the accuracy, so sub-metre jitter does not change the digest 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > treats a missing accuracy as zero rather than failing 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > still returns a digest when the image cannot be read 1ms
+ ✓ src/api/integrity.test.js > computeCaptureHash > fits the backend column, which is 64 characters wide 0ms
+ ✓ src/api/offline.test.js > enqueueing a capture > starts with an empty queue 3ms
+ ✓ src/api/offline.test.js > enqueueing a capture > queues a report 1ms
+ ✓ src/api/offline.test.js > enqueueing a capture > copies the image out of the camera cache into durable storage 1ms
+ ✓ src/api/offline.test.js > enqueueing a capture > preserves the bound location, timestamp and hash 1ms
+ ✓ src/api/offline.test.js > enqueueing a capture > stamps each entry with an id, a queue time and a zero attempt count 1ms
+ ✓ src/api/offline.test.js > enqueueing a capture > gives every entry a distinct id 1ms
+ ✓ src/api/offline.test.js > enqueueing a capture > falls back to the original uri if the copy fails 1ms
+ ✓ src/api/offline.test.js > enqueueing a capture > persists across a restart, since the queue lives in AsyncStorage 2ms
+ ✓ src/api/offline.test.js > removing a queued report > removes it by id and deletes its stored image 1ms
+ ✓ src/api/offline.test.js > removing a queued report > reports false for an unknown id 0ms
+ ✓ src/api/offline.test.js > removing a queued report > leaves the other entries alone 1ms
+ ✓ src/api/offline.test.js > flushing the queue > does nothing when empty 1ms
+ ✓ src/api/offline.test.js > flushing the queue > uploads every queued report 1ms
+ ✓ src/api/offline.test.js > flushing the queue > keeps a failed report and counts an attempt 1ms
+ ✓ src/api/offline.test.js > flushing the queue > a failing report does not block the others 0ms
+ ✓ src/api/offline.test.js > flushing the queue > deletes the stored image once a report is accepted 0ms
+ ✓ src/api/offline.test.js > flushing the queue > remembers the guest token of an anonymously filed report 3ms
+ ✓ src/api/offline.test.js > flushing the queue > does not record a guest token for a signed-in report 0ms
+ ✓ src/api/offline.test.js > flushing the queue > skips a second flush while one is already running 61ms
+ ✓ src/api/offline.test.js > flushing the queue > a retry after connectivity returns clears the queue 1ms
+ ✓ src/api/offline.test.js > dead-lettering — what is never retried again > drops a report after six failed attempts 0ms
+ ✓ src/api/offline.test.js > dead-lettering — what is never retried again > drops a report older than seven days 0ms
+ ✓ src/api/offline.test.js > dead-lettering — what is never retried again > keeps a report that is still inside the seven-day window 0ms
+ ✓ src/api/offline.test.js > dead-lettering — what is never retried again > drops a report whose stored image the OS has purged 0ms
+ ✓ src/api/offline.test.js > dead-lettering — what is never retried again > spends no network call on a report it is about to drop 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > encodes the location as WKT in lng-lat order 3ms
+ ✓ src/api/reports.test.js > buildReportFormData > always declares the capture source as the in-app camera 1ms
+ ✓ src/api/reports.test.js > buildReportFormData > sends the description 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > sends the category as a string 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > omits the category when none was chosen 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > rounds the GPS accuracy to whole metres 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > keeps a zero accuracy rather than treating it as missing 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > omits the accuracy when it is unknown 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > sends the capture timestamp 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > sends the integrity hash 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > omits the hash when none was computed 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > sends an empty description rather than "undefined" 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > attaches the image as a React Native file descriptor 0ms
+ ✓ src/api/reports.test.js > buildReportFormData > carries every field the backend serializer requires 1ms
+ ✓ src/api/auth.test.js > login > posts the credentials to the token endpoint 5ms
+ ✓ src/api/auth.test.js > login > persists both tokens in SecureStore 1ms
+ ✓ src/api/auth.test.js > login > returns the token pair to the caller 0ms
+ ✓ src/api/auth.test.js > login > propagates a rejected sign-in and stores nothing 2ms
+ ✓ src/api/auth.test.js > register > creates the account then signs straight in 1ms
+ ✓ src/api/auth.test.js > register > sends the username, email and password 0ms
+ ✓ src/api/auth.test.js > register > leaves the citizen signed in afterwards 1ms
+ ✓ src/api/auth.test.js > register > does not attempt a sign-in when registration is rejected 1ms
+ ✓ src/api/auth.test.js > fetchMe — session probe > verifies the session with an authenticated call 3ms
+ ✓ src/api/auth.test.js > fetchMe — session probe > propagates a rejected session 7ms
+ ✓ src/api/auth.test.js > push token registration > registers a signed-in device with just its token 1ms
+ ✓ src/api/auth.test.js > push token registration > binds an anonymous device to one report using its guest token 2ms
+ ✓ src/api/auth.test.js > push token registration > omits the report binding when only one half is supplied 1ms
+ ✓ src/api/auth.test.js > push token registration > unregisters a device by token 1ms
+ ✓ src/api/client.test.js > base URLs > defaults to localhost when no LAN IP is configured 2ms
+ ✓ src/api/client.test.js > base URLs > appends /api for the REST root 0ms
+ ✓ src/api/client.test.js > base URLs > derives a ws:// origin 0ms
+ ✓ src/api/client.test.js > base URLs > carries no trailing slash 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > lifts the id out of the envelope 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > reads longitude then latitude from the coordinate pair 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > spreads the properties onto the result 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > falls back to an id inside properties 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > surfaces the guest token from either position 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > reports a null guest token when the report is not anonymous 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > returns a non-Feature unchanged 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > returns null/undefined unchanged 0ms
+ ✓ src/api/client.test.js > flattenFeature — mobile collapses the envelope > ⚠️ cannot read the EWKT geometry the API actually returns 0ms
+ ✓ src/api/client.test.js > flattenFeatures > flattens every feature of a collection 1ms
+ ✓ src/api/client.test.js > flattenFeatures > flattens a lone Feature into a one-item list 1ms
+ ✓ src/api/client.test.js > flattenFeatures > passes a plain array through 0ms
+ ✓ src/api/client.test.js > flattenFeatures > returns an empty array for null and unknown shapes 0ms
+ ✓ src/api/client.test.js > flattenFeatures > ⚠️ does not unwrap a DRF-paginated response, unlike the web clients 0ms
+ ✓ src/api/client.test.js > mediaUrl > prefixes a relative path 0ms
+ ✓ src/api/client.test.js > mediaUrl > inserts a missing leading slash 0ms
+ ✓ src/api/client.test.js > mediaUrl > leaves an absolute url alone 0ms
+ ✓ src/api/client.test.js > mediaUrl > returns null for a missing path, so <Image> can be skipped 0ms
+ ✓ src/api/client.test.js > token storage (SecureStore) > starts with no tokens 0ms
+ ✓ src/api/client.test.js > token storage (SecureStore) > stores an access/refresh pair 0ms
+ ✓ src/api/client.test.js > token storage (SecureStore) > stores an access token on its own 0ms
+ ✓ src/api/client.test.js > token storage (SecureStore) > clears both tokens on sign-out 0ms
+ ✓ src/api/client.test.js > token storage (SecureStore) > clearing twice is harmless 1ms
+ ✓ src/api/client.test.js > pingServer — true reachability, not just internet > reports true on a 2xx health response 3ms
+ ✓ src/api/client.test.js > pingServer — true reachability, not just internet > hits the unauthenticated health endpoint 1ms
+ ✓ src/api/client.test.js > pingServer — true reachability, not just internet > honours the caller-supplied timeout 1ms
+ ✓ src/api/client.test.js > pingServer — true reachability, not just internet > reports false when the server is unreachable 2ms
+ ✓ src/api/client.test.js > pingServer — true reachability, not just internet > reports false on a non-2xx response 2ms
+ ✓ src/api/offline.test.js > queue subscriptions > fires immediately with the current queue 60ms
+ ✓ src/api/offline.test.js > queue subscriptions > notifies on every mutation 63ms
+ ✓ src/api/offline.test.js > queue subscriptions > stops notifying after unsubscribe 61ms
+ ✓ src/api/offline.test.js > queue subscriptions > reports sync-in-progress state 1ms
+ ✓ src/api/offline.test.js > server reachability > reports no-network when the device is offline 1ms
+ ✓ src/api/offline.test.js > server reachability > reports online when the API answers 0ms
+ ✓ src/api/offline.test.js > server reachability > distinguishes "server down" from "no internet" 0ms
+ ✓ src/api/offline.test.js > server reachability > treats a probe that throws as server-down 0ms
+ ✓ src/api/offline.test.js > server reachability > notifies subscribers immediately, then again with the probe result 60ms
+ ✓ src/api/offline.test.js > server reachability > flushes the queue as soon as the server comes back 61ms
+ ✓ src/api/offline.test.js > server reachability > stops polling once the last subscriber leaves 0ms
+
+ Test Files  7 passed (7)
+      Tests  132 passed (132)
+   Start at  23:15:18
+   Duration  1.17s (transform 349ms, setup 0ms, collect 1.47s, tests 504ms, environment 2ms, prepare 1.66s)
+

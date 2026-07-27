@@ -1,0 +1,645 @@
+Found 510 test(s).
+Creating test database for alias 'default' ('test_urbanhelper_db')...
+Operations to perform:
+  Synchronize unmigrated apps: channels, civic_api, corsheaders, drf_spectacular, gis, messages, nlp, rest_framework, rest_framework_simplejwt, staticfiles
+  Apply all migrations: admin, auth, contenttypes, pushnotify, reports, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying reports.0001_initial... OK
+  Applying reports.0002_alter_category_options_alter_report_options_and_more... OK
+  Applying reports.0003_alter_report_nlp_meta... OK
+  Applying reports.0004_report_capture_metadata... OK
+  Applying pushnotify.0001_initial... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_openapi_schema_is_served (civic_api.tests.test_auth.ApiDocumentationTests.test_openapi_schema_is_served) ... /app/nlp/views.py: Error [AnalyzeTextView]: unable to guess serializer. This is graceful fallback handling for APIViews. Consider using GenericAPIView as view base class, if view is under your control. Either way you may want to add a serializer_class (or method). Ignoring view for now.
+/app/nlp/views.py: Error [ReAnalyzeReportView]: unable to guess serializer. This is graceful fallback handling for APIViews. Consider using GenericAPIView as view base class, if view is under your control. Either way you may want to add a serializer_class (or method). Ignoring view for now.
+/app/pushnotify/views.py: Error [RegisterDeviceView]: unable to guess serializer. This is graceful fallback handling for APIViews. Consider using GenericAPIView as view base class, if view is under your control. Either way you may want to add a serializer_class (or method). Ignoring view for now.
+/app/pushnotify/views.py: Error [UnregisterDeviceView]: unable to guess serializer. This is graceful fallback handling for APIViews. Consider using GenericAPIView as view base class, if view is under your control. Either way you may want to add a serializer_class (or method). Ignoring view for now.
+/app/reports/serializers.py: Warning [ReportViewSet > ReportSerializer]: unable to resolve type hint for function "get_category_name". Consider using a type hint or @extend_schema_field. Defaulting to string.
+/app/reports/serializers.py: Error [ReportViewSet > ReportSerializer]: could not resolve model field "reports.Report.location". Failed to resolve through serializer_field_mapping, get_internal_type(), or any override mechanism. Defaulting to "string"
+ok
+test_swagger_ui_is_served (civic_api.tests.test_auth.ApiDocumentationTests.test_swagger_ui_is_served) ... ok
+test_health_is_public_and_reports_ok (civic_api.tests.test_auth.HealthEndpointTests.test_health_is_public_and_reports_ok) ... ok
+test_anonymous_visitor_can_register (civic_api.tests.test_auth.RegistrationTests.test_anonymous_visitor_can_register) ... ok
+test_duplicate_username_is_rejected (civic_api.tests.test_auth.RegistrationTests.test_duplicate_username_is_rejected) ... ok
+test_new_accounts_are_never_staff (civic_api.tests.test_auth.RegistrationTests.test_new_accounts_are_never_staff) ... ok
+test_password_is_hashed_not_stored_in_clear (civic_api.tests.test_auth.RegistrationTests.test_password_is_hashed_not_stored_in_clear) ... ok
+test_password_is_never_echoed_back (civic_api.tests.test_auth.RegistrationTests.test_password_is_never_echoed_back) ... ok
+test_short_password_is_rejected (civic_api.tests.test_auth.RegistrationTests.test_short_password_is_rejected) ... ok
+test_username_is_required (civic_api.tests.test_auth.RegistrationTests.test_username_is_required) ... ok
+test_access_token_embeds_the_staff_flag (civic_api.tests.test_auth.TokenIssueTests.test_access_token_embeds_the_staff_flag) ... ok
+test_access_token_embeds_the_username (civic_api.tests.test_auth.TokenIssueTests.test_access_token_embeds_the_username) ... ok
+test_citizen_token_is_not_marked_staff (civic_api.tests.test_auth.TokenIssueTests.test_citizen_token_is_not_marked_staff) ... ok
+test_inactive_user_cannot_obtain_a_token (civic_api.tests.test_auth.TokenIssueTests.test_inactive_user_cannot_obtain_a_token) ... ok
+test_token_carries_the_user_id (civic_api.tests.test_auth.TokenIssueTests.test_token_carries_the_user_id) ... ok
+test_unknown_user_is_rejected (civic_api.tests.test_auth.TokenIssueTests.test_unknown_user_is_rejected) ... ok
+test_valid_credentials_return_an_access_and_refresh_pair (civic_api.tests.test_auth.TokenIssueTests.test_valid_credentials_return_an_access_and_refresh_pair) ... ok
+test_wrong_password_is_rejected (civic_api.tests.test_auth.TokenIssueTests.test_wrong_password_is_rejected) ... ok
+test_garbage_refresh_token_is_rejected (civic_api.tests.test_auth.TokenRefreshTests.test_garbage_refresh_token_is_rejected) ... ok
+test_refresh_returns_a_new_access_token (civic_api.tests.test_auth.TokenRefreshTests.test_refresh_returns_a_new_access_token) ... ok
+test_refresh_tokens_are_not_rotated (civic_api.tests.test_auth.TokenRefreshTests.test_refresh_tokens_are_not_rotated) ... ok
+test_a_freshly_issued_token_verifies (civic_api.tests.test_guest_tokens.GuestTokenTests.test_a_freshly_issued_token_verifies) ... ok
+test_a_none_token_does_not_verify (civic_api.tests.test_guest_tokens.GuestTokenTests.test_a_none_token_does_not_verify) ... ok
+test_a_token_is_scoped_to_a_single_report (civic_api.tests.test_guest_tokens.GuestTokenTests.test_a_token_is_scoped_to_a_single_report) ... ok
+test_a_wrong_token_does_not_verify (civic_api.tests.test_guest_tokens.GuestTokenTests.test_a_wrong_token_does_not_verify) ... ok
+test_an_empty_token_does_not_verify (civic_api.tests.test_guest_tokens.GuestTokenTests.test_an_empty_token_does_not_verify) ... ok
+test_issuing_returns_a_token (civic_api.tests.test_guest_tokens.GuestTokenTests.test_issuing_returns_a_token) ... ok
+test_key_namespacing (civic_api.tests.test_guest_tokens.GuestTokenTests.test_key_namespacing) ... ok
+test_re_issuing_invalidates_the_previous_token (civic_api.tests.test_guest_tokens.GuestTokenTests.test_re_issuing_invalidates_the_previous_token) ... ok
+test_revoking_an_unknown_report_is_harmless (civic_api.tests.test_guest_tokens.GuestTokenTests.test_revoking_an_unknown_report_is_harmless) ... ok
+test_revoking_removes_access (civic_api.tests.test_guest_tokens.GuestTokenTests.test_revoking_removes_access) ... ok
+test_tokens_are_long_enough_to_resist_guessing (civic_api.tests.test_guest_tokens.GuestTokenTests.test_tokens_are_long_enough_to_resist_guessing) ... ok
+test_tokens_are_stored_with_a_long_expiry (civic_api.tests.test_guest_tokens.GuestTokenTests.test_tokens_are_stored_with_a_long_expiry) ... ok
+test_two_reports_get_different_tokens (civic_api.tests.test_guest_tokens.GuestTokenTests.test_two_reports_get_different_tokens) ... ok
+test_verification_against_an_unknown_report_fails (civic_api.tests.test_guest_tokens.GuestTokenTests.test_verification_against_an_unknown_report_fails) ... ok
+test_revocation_through_real_redis (civic_api.tests.test_guest_tokens.RealRedisGuestTokenTests.test_revocation_through_real_redis) ... ok
+test_round_trip_through_real_redis (civic_api.tests.test_guest_tokens.RealRedisGuestTokenTests.test_round_trip_through_real_redis) ... ok
+test_the_key_actually_carries_a_ttl (civic_api.tests.test_guest_tokens.RealRedisGuestTokenTests.test_the_key_actually_carries_a_ttl) ... ok
+test_a_category_may_be_chosen_at_submission (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_a_category_may_be_chosen_at_submission) ... ok
+test_anonymous_create_succeeds (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_anonymous_create_succeeds) ... ok
+test_camera_capture_without_accuracy_is_rejected (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_camera_capture_without_accuracy_is_rejected) ... ok
+test_capture_metadata_is_persisted (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_capture_metadata_is_persisted) ... ok
+test_created_report_has_no_owner (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_created_report_has_no_owner) ... ok
+test_each_report_gets_a_distinct_token (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_each_report_gets_a_distinct_token) ... ok
+test_guest_access_token_is_returned_inside_properties (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_guest_access_token_is_returned_inside_properties) ... ok
+test_guest_token_actually_verifies_against_the_store (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_guest_token_actually_verifies_against_the_store) ... ok
+test_missing_description_is_rejected (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_missing_description_is_rejected) ... ok
+test_missing_image_is_rejected (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_missing_image_is_rejected) ... ok
+test_missing_location_is_rejected (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_missing_location_is_rejected) ... ok
+test_new_report_starts_in_submitted (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_new_report_starts_in_submitted) ... ok
+test_response_geometry_matches_the_submitted_point (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_response_geometry_matches_the_submitted_point) ... ok
+test_response_is_a_geojson_feature (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_response_is_a_geojson_feature) ... ok
+test_vpn_grade_gps_accuracy_is_rejected (civic_api.tests.test_reports_api.AnonymousReportCreationTests.test_vpn_grade_gps_accuracy_is_rejected) ... ok
+test_client_cannot_attribute_a_report_to_someone_else (civic_api.tests.test_reports_api.AuthenticatedReportCreationTests.test_client_cannot_attribute_a_report_to_someone_else) ... ok
+test_no_guest_token_is_issued_for_signed_in_users (civic_api.tests.test_reports_api.AuthenticatedReportCreationTests.test_no_guest_token_is_issued_for_signed_in_users) ... ok
+test_report_is_attributed_to_the_signed_in_user (civic_api.tests.test_reports_api.AuthenticatedReportCreationTests.test_report_is_attributed_to_the_signed_in_user) ... ok
+test_a_citizen_can_list_categories (civic_api.tests.test_reports_api.CategoryApiTests.test_a_citizen_can_list_categories) ... ok
+test_a_single_category_can_be_retrieved (civic_api.tests.test_reports_api.CategoryApiTests.test_a_single_category_can_be_retrieved) ... ok
+test_categories_are_plain_json_not_geojson (civic_api.tests.test_reports_api.CategoryApiTests.test_categories_are_plain_json_not_geojson) ... ok
+test_listing_requires_authentication (civic_api.tests.test_reports_api.CategoryApiTests.test_listing_requires_authentication) ... ok
+test_the_endpoint_is_read_only (civic_api.tests.test_reports_api.CategoryApiTests.test_the_endpoint_is_read_only) ... ok
+test_a_malformed_distance_is_a_client_error (civic_api.tests.test_reports_api.DistanceFilterTests.test_a_malformed_distance_is_a_client_error) ... ok
+test_a_malformed_point_is_a_client_error (civic_api.tests.test_reports_api.DistanceFilterTests.test_a_malformed_point_is_a_client_error) ... ok
+test_a_tight_radius_returns_only_the_nearby_report (civic_api.tests.test_reports_api.DistanceFilterTests.test_a_tight_radius_returns_only_the_nearby_report) ... ok
+test_a_wide_radius_returns_both (civic_api.tests.test_reports_api.DistanceFilterTests.test_a_wide_radius_returns_both) ... ok
+test_the_dist_parameter_is_in_degrees_not_metres (civic_api.tests.test_reports_api.DistanceFilterTests.test_the_dist_parameter_is_in_degrees_not_metres) ... ok
+test_without_a_point_every_report_is_returned (civic_api.tests.test_reports_api.DistanceFilterTests.test_without_a_point_every_report_is_returned) ... ok
+test_a_citizen_never_sees_anonymous_reports (civic_api.tests.test_reports_api.ReportListTests.test_a_citizen_never_sees_anonymous_reports) ... ok
+test_a_citizen_sees_only_their_own_reports (civic_api.tests.test_reports_api.ReportListTests.test_a_citizen_sees_only_their_own_reports) ... ok
+test_anonymous_listing_is_denied (civic_api.tests.test_reports_api.ReportListTests.test_anonymous_listing_is_denied) ... ok
+test_list_is_a_feature_collection (civic_api.tests.test_reports_api.ReportListTests.test_list_is_a_feature_collection) ... ok
+test_list_is_ordered_newest_first (civic_api.tests.test_reports_api.ReportListTests.test_list_is_ordered_newest_first) ... ok
+test_staff_see_every_report (civic_api.tests.test_reports_api.ReportListTests.test_staff_see_every_report) ... ok
+test_a_guest_token_does_not_unlock_a_different_report (civic_api.tests.test_reports_api.ReportRetrieveTests.test_a_guest_token_does_not_unlock_a_different_report) ... ok
+test_a_signed_in_stranger_with_a_guest_token_is_forbidden (civic_api.tests.test_reports_api.ReportRetrieveTests.test_a_signed_in_stranger_with_a_guest_token_is_forbidden) ... ok
+test_a_valid_guest_token_grants_read_access (civic_api.tests.test_reports_api.ReportRetrieveTests.test_a_valid_guest_token_grants_read_access) ... ok
+test_a_wrong_guest_token_is_refused (civic_api.tests.test_reports_api.ReportRetrieveTests.test_a_wrong_guest_token_is_refused) ... ok
+test_anonymous_without_a_token_is_refused (civic_api.tests.test_reports_api.ReportRetrieveTests.test_anonymous_without_a_token_is_refused) ... ok
+test_another_citizen_cannot_read_it (civic_api.tests.test_reports_api.ReportRetrieveTests.test_another_citizen_cannot_read_it) ... ok
+test_detail_response_is_a_feature (civic_api.tests.test_reports_api.ReportRetrieveTests.test_detail_response_is_a_feature) ... ok
+test_owner_can_read_their_report (civic_api.tests.test_reports_api.ReportRetrieveTests.test_owner_can_read_their_report) ... ok
+test_staff_can_read_any_report (civic_api.tests.test_reports_api.ReportRetrieveTests.test_staff_can_read_any_report) ... ok
+test_unknown_report_id_is_a_404 (civic_api.tests.test_reports_api.ReportRetrieveTests.test_unknown_report_id_is_a_404) ... ok
+test_a_citizen_is_denied (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_a_citizen_is_denied) ... ok
+test_a_closed_report_is_frozen (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_a_closed_report_is_frozen) ... ok
+test_an_illegal_jump_is_rejected (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_an_illegal_jump_is_rejected) ... ok
+test_anonymous_is_denied (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_anonymous_is_denied) ... ok
+test_resolving_with_evidence_succeeds_and_stores_the_image (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_resolving_with_evidence_succeeds_and_stores_the_image) ... ok
+test_resolving_without_evidence_is_rejected (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_resolving_without_evidence_is_rejected) ... ok
+test_staff_can_perform_an_allowed_transition (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_staff_can_perform_an_allowed_transition) ... ok
+test_the_response_is_the_updated_feature (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_the_response_is_the_updated_feature) ... ok
+test_the_whole_lifecycle_can_be_walked (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_the_whole_lifecycle_can_be_walked) ... ok
+test_transition_on_a_missing_report_is_a_404 (civic_api.tests.test_reports_api.ReportTransitionActionTests.test_transition_on_a_missing_report_is_a_404) ... ok
+test_anonymous_cannot_patch (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_anonymous_cannot_patch) ... ok
+test_staff_can_delete (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_staff_can_delete) ... ok
+test_staff_can_patch (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_staff_can_patch) ... ok
+test_staff_edits_cannot_rewrite_the_capture_record (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_staff_edits_cannot_rewrite_the_capture_record) ... ok
+test_staff_patch_honours_the_status_machine (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_staff_patch_honours_the_status_machine) ... ok
+test_the_owner_cannot_delete_their_own_report (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_the_owner_cannot_delete_their_own_report) ... ok
+test_the_owner_cannot_patch_their_own_report (civic_api.tests.test_reports_api.ReportWritePermissionTests.test_the_owner_cannot_patch_their_own_report) ... ok
+test_a_custom_event_name_is_honoured (civic_api.tests.test_signals.BroadcastPayloadTests.test_a_custom_event_name_is_honoured) ... ok
+test_a_missing_channel_layer_is_a_no_op (civic_api.tests.test_signals.BroadcastPayloadTests.test_a_missing_channel_layer_is_a_no_op) ... ok
+test_payload_carries_the_fields_clients_render (civic_api.tests.test_signals.BroadcastPayloadTests.test_payload_carries_the_fields_clients_render) ... ok
+test_a_broken_channel_layer_never_breaks_the_save (civic_api.tests.test_signals.BroadcastSignalTests.test_a_broken_channel_layer_never_breaks_the_save) ... WebSocket broadcast failed: channel layer down
+Traceback (most recent call last):
+  File "/app/civic_api/signals.py", line 32, in notify_report_subscribers
+    broadcast_report_update(instance)
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+RuntimeError: channel layer down
+ok
+test_creating_a_report_broadcasts (civic_api.tests.test_signals.BroadcastSignalTests.test_creating_a_report_broadcasts) ... ok
+test_updating_a_report_broadcasts (civic_api.tests.test_signals.BroadcastSignalTests.test_updating_a_report_broadcasts) ... ok
+test_a_deleted_row_leaves_the_stash_empty (civic_api.tests.test_signals.OldStatusStashTests.test_a_deleted_row_leaves_the_stash_empty) ... ok
+test_a_new_instance_has_no_previous_status (civic_api.tests.test_signals.OldStatusStashTests.test_a_new_instance_has_no_previous_status) ... ok
+test_an_existing_instance_remembers_its_stored_status (civic_api.tests.test_signals.OldStatusStashTests.test_an_existing_instance_remembers_its_stored_status) ... ok
+test_the_stash_reads_the_database_not_the_in_memory_value (civic_api.tests.test_signals.OldStatusStashTests.test_the_stash_reads_the_database_not_the_in_memory_value) ... ok
+test_post_save_receiver_is_connected (civic_api.tests.test_signals.SignalRegistrationTests.test_post_save_receiver_is_connected) ... ok
+test_pre_save_receiver_is_connected (civic_api.tests.test_signals.SignalRegistrationTests.test_pre_save_receiver_is_connected) ... ok
+test_a_broker_outage_never_breaks_the_save (civic_api.tests.test_signals.StatusChangePushTests.test_a_broker_outage_never_breaks_the_save) ... Push enqueue failed: broker unreachable
+Traceback (most recent call last):
+  File "/app/civic_api/signals.py", line 42, in notify_report_subscribers
+    send_status_push.delay(instance.id, instance.status)
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+OSError: broker unreachable
+ok
+test_a_real_status_change_enqueues_a_push (civic_api.tests.test_signals.StatusChangePushTests.test_a_real_status_change_enqueues_a_push) ... ok
+test_a_transition_through_the_api_pushes (civic_api.tests.test_signals.StatusChangePushTests.test_a_transition_through_the_api_pushes) ... ok
+test_creating_a_report_does_not_push (civic_api.tests.test_signals.StatusChangePushTests.test_creating_a_report_does_not_push) ... ok
+test_each_step_of_the_lifecycle_pushes_once (civic_api.tests.test_signals.StatusChangePushTests.test_each_step_of_the_lifecycle_pushes_once) ... ok
+test_saving_without_a_status_change_does_not_push (civic_api.tests.test_signals.StatusChangePushTests.test_saving_without_a_status_change_does_not_push) ... ok
+test_eval_does_not_overwrite_the_saved_model (nlp.tests.test_management_commands.EvaluateOnlyTests.test_eval_does_not_overwrite_the_saved_model) ... ok
+test_eval_falls_back_to_training_when_no_model_exists (nlp.tests.test_management_commands.EvaluateOnlyTests.test_eval_falls_back_to_training_when_no_model_exists) ... ok
+test_eval_reports_cross_validation_accuracy (nlp.tests.test_management_commands.EvaluateOnlyTests.test_eval_reports_cross_validation_accuracy) ... ok
+test_verbose_eval_prints_a_classification_report (nlp.tests.test_management_commands.EvaluateOnlyTests.test_verbose_eval_prints_a_classification_report) ... ok
+test_sample_predictions_are_printed_after_training (nlp.tests.test_management_commands.TrainCommandTests.test_sample_predictions_are_printed_after_training) ... ok
+test_the_corpus_size_is_reported (nlp.tests.test_management_commands.TrainCommandTests.test_the_corpus_size_is_reported) ... ok
+test_the_reported_accuracy_is_a_sane_percentage (nlp.tests.test_management_commands.TrainCommandTests.test_the_reported_accuracy_is_a_sane_percentage) ... ok
+test_training_runs_and_reports_success (nlp.tests.test_management_commands.TrainCommandTests.test_training_runs_and_reports_success) ... ok
+test_training_writes_the_model_and_vectorizer_pickles (nlp.tests.test_management_commands.TrainCommandTests.test_training_writes_the_model_and_vectorizer_pickles) ... ok
+test_an_empty_database_simply_adds_nothing (nlp.tests.test_management_commands.TrainFromDatabaseTests.test_an_empty_database_simply_adds_nothing) ... ok
+test_closed_reports_count_as_confirmed_too (nlp.tests.test_management_commands.TrainFromDatabaseTests.test_closed_reports_count_as_confirmed_too) ... ok
+test_confirmed_reports_are_added_to_the_corpus (nlp.tests.test_management_commands.TrainFromDatabaseTests.test_confirmed_reports_are_added_to_the_corpus) ... ok
+test_reports_still_in_progress_are_not_used (nlp.tests.test_management_commands.TrainFromDatabaseTests.test_reports_still_in_progress_are_not_used) ... ok
+test_uncategorised_reports_are_not_used (nlp.tests.test_management_commands.TrainFromDatabaseTests.test_uncategorised_reports_are_not_used) ... ok
+test_very_short_descriptions_are_not_used (nlp.tests.test_management_commands.TrainFromDatabaseTests.test_very_short_descriptions_are_not_used) ... ok
+test_a_missing_text_field_is_a_client_error (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_a_missing_text_field_is_a_client_error) ... ok
+test_a_report_text_is_analysed (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_a_report_text_is_analysed) ... ok
+test_an_overlong_text_is_refused (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_an_overlong_text_is_refused) ... ok
+test_analysing_does_not_create_a_report (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_analysing_does_not_create_a_report) ... ok
+test_authentication_is_required (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_authentication_is_required) ... ok
+test_empty_text_is_a_client_error (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_empty_text_is_a_client_error) ... ok
+ok
+ok
+ok
+ok
+test_whitespace_only_text_is_a_client_error (nlp.tests.test_pipeline_integration.AnalyzeEndpointTests.test_whitespace_only_text_is_a_client_error) ... ok
+test_a_category_chosen_by_the_citizen_is_never_overwritten (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_a_category_chosen_by_the_citizen_is_never_overwritten) ... ok
+ok
+test_a_new_report_is_analysed_automatically (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_a_new_report_is_analysed_automatically) ... ok
+test_a_report_filed_through_the_api_is_analysed (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_a_report_filed_through_the_api_is_analysed) ... ok
+test_a_routine_report_stays_non_urgent (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_a_routine_report_stays_non_urgent) ... [NLP Signal] Category 'مشکلات روشنایی' not in DB
+ok
+test_an_analysis_failure_never_loses_the_report (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_an_analysis_failure_never_loses_the_report) ... [NLP Signal] Error on Report #112: مدل خراب
+Traceback (most recent call last):
+  File "/app/nlp/signals.py", line 36, in run_nlp_on_new_report
+    result = analyze_report(
+             ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+RuntimeError: مدل خراب
+ok
+test_an_uncategorised_report_gets_a_category (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_an_uncategorised_report_gets_a_category) ... ok
+test_editing_a_report_does_not_re_run_the_analysis (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_editing_a_report_does_not_re_run_the_analysis) ... [NLP Signal] Category 'مشکلات روشنایی' not in DB
+ok
+test_the_stored_meta_carries_the_pipeline_output (nlp.tests.test_pipeline_integration.AutoAnalysisSignalTests.test_the_stored_meta_carries_the_pipeline_output) ... ok
+test_a_missing_report_is_a_no_op (nlp.tests.test_pipeline_integration.CeleryTaskTests.test_a_missing_report_is_a_no_op) ... [NLP Task] Report 999999 not found.
+ok
+test_a_suggestion_with_no_matching_category_row_is_skipped (nlp.tests.test_pipeline_integration.CeleryTaskTests.test_a_suggestion_with_no_matching_category_row_is_skipped) ... ok
+ok
+test_the_task_is_registered_under_its_documented_name (nlp.tests.test_pipeline_integration.CeleryTaskTests.test_the_task_is_registered_under_its_documented_name) ... ok
+test_the_task_leaves_the_chosen_category_alone (nlp.tests.test_pipeline_integration.CeleryTaskTests.test_the_task_leaves_the_chosen_category_alone) ... ok
+test_the_task_sets_the_suggested_category_and_confidence (nlp.tests.test_pipeline_integration.CeleryTaskTests.test_the_task_sets_the_suggested_category_and_confidence) ... ok
+test_the_task_writes_the_analysis_back (nlp.tests.test_pipeline_integration.CeleryTaskTests.test_the_task_writes_the_analysis_back) ... ok
+ok
+test_an_existing_report_can_be_re_analysed (nlp.tests.test_pipeline_integration.ReanalyzeEndpointTests.test_an_existing_report_can_be_re_analysed) ... ok
+test_an_unknown_report_is_a_404 (nlp.tests.test_pipeline_integration.ReanalyzeEndpointTests.test_an_unknown_report_is_a_404) ... ok
+test_authentication_is_required (nlp.tests.test_pipeline_integration.ReanalyzeEndpointTests.test_authentication_is_required) ... ok
+ok
+test_re_analysis_applies_the_category (nlp.tests.test_pipeline_integration.ReanalyzeEndpointTests.test_re_analysis_applies_the_category) ... ok
+ok
+ok
+test_the_auto_analysis_receiver_is_connected (nlp.tests.test_pipeline_integration.SignalRegistrationTests.test_the_auto_analysis_receiver_is_connected) ... ok
+test_the_test_helper_really_detaches_and_reattaches_it (nlp.tests.test_pipeline_integration.SignalRegistrationTests.test_the_test_helper_really_detaches_and_reattaches_it) ... ok
+test_a_missing_guest_token_does_not_subscribe (pushnotify.tests.test_api.GuestSubscriptionTests.test_a_missing_guest_token_does_not_subscribe) ... ok
+test_a_token_for_a_different_report_does_not_subscribe (pushnotify.tests.test_api.GuestSubscriptionTests.test_a_token_for_a_different_report_does_not_subscribe) ... ok
+test_a_valid_guest_token_creates_the_subscription (pushnotify.tests.test_api.GuestSubscriptionTests.test_a_valid_guest_token_creates_the_subscription) ... ok
+test_a_wrong_guest_token_does_not_subscribe (pushnotify.tests.test_api.GuestSubscriptionTests.test_a_wrong_guest_token_does_not_subscribe) ... ok
+test_an_unknown_report_id_does_not_subscribe (pushnotify.tests.test_api.GuestSubscriptionTests.test_an_unknown_report_id_does_not_subscribe) ... ok
+test_one_device_may_follow_several_reports (pushnotify.tests.test_api.GuestSubscriptionTests.test_one_device_may_follow_several_reports) ... ok
+test_registering_without_a_report_leaves_the_device_unsubscribed (pushnotify.tests.test_api.GuestSubscriptionTests.test_registering_without_a_report_leaves_the_device_unsubscribed) ... ok
+test_subscribing_twice_is_idempotent (pushnotify.tests.test_api.GuestSubscriptionTests.test_subscribing_twice_is_idempotent) ... ok
+test_a_user_may_register_several_devices (pushnotify.tests.test_api.PushDeviceModelTests.test_a_user_may_register_several_devices) ... ok
+test_deleting_the_user_keeps_the_device (pushnotify.tests.test_api.PushDeviceModelTests.test_deleting_the_user_keeps_the_device) ... ok
+test_devices_are_active_by_default (pushnotify.tests.test_api.PushDeviceModelTests.test_devices_are_active_by_default) ... ok
+test_str_marks_anonymous_devices_as_guest (pushnotify.tests.test_api.PushDeviceModelTests.test_str_marks_anonymous_devices_as_guest) ... ok
+test_str_names_the_owner (pushnotify.tests.test_api.PushDeviceModelTests.test_str_names_the_owner) ... ok
+test_the_expo_token_is_unique (pushnotify.tests.test_api.PushDeviceModelTests.test_the_expo_token_is_unique) ... ok
+test_a_non_expo_token_is_rejected (pushnotify.tests.test_api.RegistrationTests.test_a_non_expo_token_is_rejected) ... ok
+test_a_signed_in_device_is_bound_to_its_user (pushnotify.tests.test_api.RegistrationTests.test_a_signed_in_device_is_bound_to_its_user) ... ok
+test_an_anonymous_device_can_register (pushnotify.tests.test_api.RegistrationTests.test_an_anonymous_device_can_register) ... ok
+test_an_anonymous_device_has_no_owner (pushnotify.tests.test_api.RegistrationTests.test_an_anonymous_device_has_no_owner) ... ok
+test_an_unrecognised_platform_is_rejected (pushnotify.tests.test_api.RegistrationTests.test_an_unrecognised_platform_is_rejected) ... ok
+test_re_registering_reactivates_a_disabled_device (pushnotify.tests.test_api.RegistrationTests.test_re_registering_reactivates_a_disabled_device) ... ok
+test_registering_twice_updates_rather_than_duplicates (pushnotify.tests.test_api.RegistrationTests.test_registering_twice_updates_rather_than_duplicates) ... ok
+test_signing_in_claims_a_previously_anonymous_device (pushnotify.tests.test_api.RegistrationTests.test_signing_in_claims_a_previously_anonymous_device) ... ok
+test_the_platform_defaults_to_unknown (pushnotify.tests.test_api.RegistrationTests.test_the_platform_defaults_to_unknown) ... ok
+test_the_platform_is_recorded (pushnotify.tests.test_api.RegistrationTests.test_the_platform_is_recorded) ... ok
+test_the_rejection_message_is_in_persian (pushnotify.tests.test_api.RegistrationTests.test_the_rejection_message_is_in_persian) ... ok
+test_the_token_is_required (pushnotify.tests.test_api.RegistrationTests.test_the_token_is_required) ... ok
+test_a_device_cannot_subscribe_to_the_same_report_twice (pushnotify.tests.test_api.ReportSubscriptionModelTests.test_a_device_cannot_subscribe_to_the_same_report_twice) ... ok
+test_deleting_the_device_removes_the_subscription (pushnotify.tests.test_api.ReportSubscriptionModelTests.test_deleting_the_device_removes_the_subscription) ... ok
+test_deleting_the_report_removes_the_subscription (pushnotify.tests.test_api.ReportSubscriptionModelTests.test_deleting_the_report_removes_the_subscription) ... ok
+test_str_identifies_both_sides (pushnotify.tests.test_api.ReportSubscriptionModelTests.test_str_identifies_both_sides) ... ok
+test_the_reverse_accessors_are_named_as_documented (pushnotify.tests.test_api.ReportSubscriptionModelTests.test_the_reverse_accessors_are_named_as_documented) ... ok
+test_the_device_row_is_kept_for_audit (pushnotify.tests.test_api.UnregistrationTests.test_the_device_row_is_kept_for_audit) ... ok
+test_the_token_is_required (pushnotify.tests.test_api.UnregistrationTests.test_the_token_is_required) ... ok
+test_unregistering_an_unknown_token_is_harmless (pushnotify.tests.test_api.UnregistrationTests.test_unregistering_an_unknown_token_is_harmless) ... ok
+test_unregistering_deactivates_the_device (pushnotify.tests.test_api.UnregistrationTests.test_unregistering_deactivates_the_device) ... ok
+test_unregistering_needs_no_authentication (pushnotify.tests.test_api.UnregistrationTests.test_unregistering_needs_no_authentication) ... ok
+test_a_device_that_is_both_owner_and_subscriber_is_counted_once (pushnotify.tests.test_tasks.AudienceTests.test_a_device_that_is_both_owner_and_subscriber_is_counted_once) ... ok
+test_a_report_with_no_devices_reaches_nobody (pushnotify.tests.test_tasks.AudienceTests.test_a_report_with_no_devices_reaches_nobody) ... ok
+test_a_subscribed_guest_device_is_included (pushnotify.tests.test_tasks.AudienceTests.test_a_subscribed_guest_device_is_included) ... ok
+test_an_anonymous_report_only_reaches_its_subscribers (pushnotify.tests.test_tasks.AudienceTests.test_an_anonymous_report_only_reaches_its_subscribers) ... ok
+test_another_citizens_devices_are_excluded (pushnotify.tests.test_tasks.AudienceTests.test_another_citizens_devices_are_excluded) ... ok
+test_deactivated_owner_devices_are_skipped (pushnotify.tests.test_tasks.AudienceTests.test_deactivated_owner_devices_are_skipped) ... ok
+test_deactivated_subscribed_devices_are_skipped (pushnotify.tests.test_tasks.AudienceTests.test_deactivated_subscribed_devices_are_skipped) ... ok
+test_the_author_and_a_guest_device_are_both_reached (pushnotify.tests.test_tasks.AudienceTests.test_the_author_and_a_guest_device_are_both_reached) ... ok
+test_the_authors_devices_are_included (pushnotify.tests.test_tasks.AudienceTests.test_the_authors_devices_are_included) ... ok
+test_a_guest_reporter_who_registered_a_device_is_notified (pushnotify.tests.test_tasks.EndToEndPushTests.test_a_guest_reporter_who_registered_a_device_is_notified) ... ok
+test_a_status_transition_produces_a_push_for_the_reporter (pushnotify.tests.test_tasks.EndToEndPushTests.test_a_status_transition_produces_a_push_for_the_reporter) ... ok
+test_an_unrelated_edit_produces_no_push (pushnotify.tests.test_tasks.EndToEndPushTests.test_an_unrelated_edit_produces_no_push) ... ok
+test_an_unknown_status_falls_back_to_the_raw_value (pushnotify.tests.test_tasks.MessageContentTests.test_an_unknown_status_falls_back_to_the_raw_value) ... ok
+test_every_status_renders_a_persian_label (pushnotify.tests.test_tasks.MessageContentTests.test_every_status_renders_a_persian_label) ... ok
+test_one_message_is_built_per_token (pushnotify.tests.test_tasks.MessageContentTests.test_one_message_is_built_per_token) ... ok
+test_the_android_channel_is_declared (pushnotify.tests.test_tasks.MessageContentTests.test_the_android_channel_is_declared) ... ok
+test_the_body_names_the_report_and_its_new_state (pushnotify.tests.test_tasks.MessageContentTests.test_the_body_names_the_report_and_its_new_state) ... ok
+test_the_message_is_addressed_to_the_device (pushnotify.tests.test_tasks.MessageContentTests.test_the_message_is_addressed_to_the_device) ... ok
+test_the_message_is_marked_high_priority_with_sound (pushnotify.tests.test_tasks.MessageContentTests.test_the_message_is_marked_high_priority_with_sound) ... ok
+test_the_payload_lets_the_app_deep_link_to_the_report (pushnotify.tests.test_tasks.MessageContentTests.test_the_payload_lets_the_app_deep_link_to_the_report) ... ok
+test_the_title_is_in_persian (pushnotify.tests.test_tasks.MessageContentTests.test_the_title_is_in_persian) ... ok
+test_a_missing_report_is_a_no_op (pushnotify.tests.test_tasks.TaskRobustnessTests.test_a_missing_report_is_a_no_op) ... [Push] Report 999999 not found
+ok
+test_a_report_with_no_audience_sends_nothing (pushnotify.tests.test_tasks.TaskRobustnessTests.test_a_report_with_no_audience_sends_nothing) ... ok
+test_several_devices_all_receive_a_message (pushnotify.tests.test_tasks.TaskRobustnessTests.test_several_devices_all_receive_a_message) ... ok
+test_the_task_is_registered_under_its_documented_name (pushnotify.tests.test_tasks.TaskRobustnessTests.test_the_task_is_registered_under_its_documented_name) ... ok
+test_description_is_optional (reports.tests.test_models.CategoryModelTests.test_description_is_optional) ... ok
+test_persian_verbose_names (reports.tests.test_models.CategoryModelTests.test_persian_verbose_names) ... ok
+test_str_is_the_name (reports.tests.test_models.CategoryModelTests.test_str_is_the_name) ... ok
+test_capture_metadata_is_empty_by_default (reports.tests.test_models.ReportDefaultsTests.test_capture_metadata_is_empty_by_default) ... ok
+test_capture_source_defaults_to_unknown (reports.tests.test_models.ReportDefaultsTests.test_capture_source_defaults_to_unknown) ... ok
+test_new_report_is_not_urgent_by_default (reports.tests.test_models.ReportDefaultsTests.test_new_report_is_not_urgent_by_default) ... ok
+test_new_report_starts_as_submitted (reports.tests.test_models.ReportDefaultsTests.test_new_report_starts_as_submitted) ... ok
+test_str_reflects_status_changes (reports.tests.test_models.ReportDefaultsTests.test_str_reflects_status_changes) ... ok
+test_str_uses_persian_status_label (reports.tests.test_models.ReportDefaultsTests.test_str_uses_persian_status_label) ... ok
+test_timestamps_are_populated (reports.tests.test_models.ReportDefaultsTests.test_timestamps_are_populated) ... ok
+test_distance_query_finds_nearby_reports (reports.tests.test_models.ReportGeometryTests.test_distance_query_finds_nearby_reports) ... ok
+test_location_round_trips_as_a_wgs84_point (reports.tests.test_models.ReportGeometryTests.test_location_round_trips_as_a_wgs84_point) ... ok
+test_x_is_longitude_and_y_is_latitude (reports.tests.test_models.ReportGeometryTests.test_x_is_longitude_and_y_is_latitude) ... ok
+test_crisis_keywords_default_to_an_empty_list (reports.tests.test_models.ReportNlpPropertyTests.test_crisis_keywords_default_to_an_empty_list) ... ok
+test_crisis_keywords_property_reads_the_json_blob (reports.tests.test_models.ReportNlpPropertyTests.test_crisis_keywords_property_reads_the_json_blob) ... ok
+test_nlp_meta_survives_a_database_round_trip (reports.tests.test_models.ReportNlpPropertyTests.test_nlp_meta_survives_a_database_round_trip) ... ok
+test_sentiment_property_is_none_without_meta (reports.tests.test_models.ReportNlpPropertyTests.test_sentiment_property_is_none_without_meta) ... ok
+test_sentiment_property_reads_the_json_blob (reports.tests.test_models.ReportNlpPropertyTests.test_sentiment_property_reads_the_json_blob) ... ok
+test_default_ordering_is_newest_first (reports.tests.test_models.ReportOrderingTests.test_default_ordering_is_newest_first) ... ok
+test_deleting_a_category_keeps_the_report (reports.tests.test_models.ReportRelationTests.test_deleting_a_category_keeps_the_report) ... ok
+test_deleting_the_author_keeps_the_report (reports.tests.test_models.ReportRelationTests.test_deleting_the_author_keeps_the_report) ... ok
+test_nlp_suggested_category_is_independent_of_category (reports.tests.test_models.ReportRelationTests.test_nlp_suggested_category_is_independent_of_category) ... ok
+test_reports_may_be_anonymous (reports.tests.test_models.ReportRelationTests.test_reports_may_be_anonymous) ... ok
+test_description_is_mandatory_at_the_database_level (reports.tests.test_models.ReportRequiredFieldsTests.test_description_is_mandatory_at_the_database_level) ... ok
+test_location_is_mandatory_at_the_database_level (reports.tests.test_models.ReportRequiredFieldsTests.test_location_is_mandatory_at_the_database_level) ... ok
+test_capture_source_choices (reports.tests.test_models.ReportStatusChoicesTests.test_capture_source_choices) ... ok
+test_push_worker_labels_match_the_model (reports.tests.test_models.ReportStatusChoicesTests.test_push_worker_labels_match_the_model) ... ok
+test_status_choices_match_the_documented_lifecycle (reports.tests.test_models.ReportStatusChoicesTests.test_status_choices_match_the_documented_lifecycle) ... ok
+test_different_seeds_produce_different_data (reports.tests.test_seed_command.SeedDataTests.test_different_seeds_produce_different_data) ... ok
+test_every_report_carries_a_description (reports.tests.test_seed_command.SeedDataTests.test_every_report_carries_a_description) ... ok
+test_every_report_is_categorised (reports.tests.test_seed_command.SeedDataTests.test_every_report_is_categorised) ... ok
+test_it_creates_the_canonical_categories (reports.tests.test_seed_command.SeedDataTests.test_it_creates_the_canonical_categories) ... ok
+test_it_creates_the_requested_number_of_reports (reports.tests.test_seed_command.SeedDataTests.test_it_creates_the_requested_number_of_reports) ... ok
+test_it_defaults_to_sixty_reports (reports.tests.test_seed_command.SeedDataTests.test_it_defaults_to_sixty_reports) ... ok
+test_it_reuses_categories_that_already_exist (reports.tests.test_seed_command.SeedDataTests.test_it_reuses_categories_that_already_exist) ... ok
+test_the_run_is_reproducible_for_a_given_seed (reports.tests.test_seed_command.SeedDataTests.test_the_run_is_reproducible_for_a_given_seed) ... ok
+ok
+ok
+ok
+test_a_reasonable_batch_spreads_across_several_cities (reports.tests.test_seed_command.SeedGeographyTests.test_a_reasonable_batch_spreads_across_several_cities) ... ok
+test_coordinates_stay_inside_iran (reports.tests.test_seed_command.SeedGeographyTests.test_coordinates_stay_inside_iran) ... ok
+test_every_report_lands_near_one_of_the_listed_cities (reports.tests.test_seed_command.SeedGeographyTests.test_every_report_lands_near_one_of_the_listed_cities) ... ok
+test_capture_metadata_looks_like_a_real_camera_capture (reports.tests.test_seed_command.SeedRealismTests.test_capture_metadata_looks_like_a_real_camera_capture) ... ok
+test_descriptions_come_from_the_template_bank (reports.tests.test_seed_command.SeedRealismTests.test_descriptions_come_from_the_template_bank) ... ok
+test_every_category_has_templates (reports.tests.test_seed_command.SeedRealismTests.test_every_category_has_templates) ... ok
+test_it_produces_a_spread_of_statuses (reports.tests.test_seed_command.SeedRealismTests.test_it_produces_a_spread_of_statuses) ... ok
+test_only_valid_statuses_are_used (reports.tests.test_seed_command.SeedRealismTests.test_only_valid_statuses_are_used) ... ok
+test_reports_are_back_dated_so_charts_have_a_time_series (reports.tests.test_seed_command.SeedRealismTests.test_reports_are_back_dated_so_charts_have_a_time_series) ... ok
+test_seeded_accuracy_always_passes_the_production_gate (reports.tests.test_seed_command.SeedRealismTests.test_seeded_accuracy_always_passes_the_production_gate) ... ok
+test_some_but_not_all_reports_are_urgent (reports.tests.test_seed_command.SeedRealismTests.test_some_but_not_all_reports_are_urgent) ... ok
+test_accuracy_gate_does_not_fire_on_update (reports.tests.test_serializers.CaptureMetadataImmutabilityTests.test_accuracy_gate_does_not_fire_on_update) ... ok
+test_capture_source_cannot_be_rewritten (reports.tests.test_serializers.CaptureMetadataImmutabilityTests.test_capture_source_cannot_be_rewritten) ... ok
+test_captured_at_cannot_be_rewritten (reports.tests.test_serializers.CaptureMetadataImmutabilityTests.test_captured_at_cannot_be_rewritten) ... ok
+test_gps_accuracy_cannot_be_rewritten (reports.tests.test_serializers.CaptureMetadataImmutabilityTests.test_gps_accuracy_cannot_be_rewritten) ... ok
+test_integrity_hash_cannot_be_rewritten (reports.tests.test_serializers.CaptureMetadataImmutabilityTests.test_integrity_hash_cannot_be_rewritten) ... ok
+test_ordinary_fields_are_still_editable (reports.tests.test_serializers.CaptureMetadataImmutabilityTests.test_ordinary_fields_are_still_editable) ... ok
+test_exposes_id_name_description (reports.tests.test_serializers.CategorySerializerTests.test_exposes_id_name_description) ... ok
+test_category_name_is_denormalised_for_the_client (reports.tests.test_serializers.GeoJsonShapeTests.test_category_name_is_denormalised_for_the_client) ... ok
+test_category_name_is_null_when_uncategorised (reports.tests.test_serializers.GeoJsonShapeTests.test_category_name_is_null_when_uncategorised) ... ok
+test_geometry_carries_the_point_in_lng_lat_order (reports.tests.test_serializers.GeoJsonShapeTests.test_geometry_carries_the_point_in_lng_lat_order) ... ok
+test_id_lives_outside_properties (reports.tests.test_serializers.GeoJsonShapeTests.test_id_lives_outside_properties) ... ok
+test_many_reports_serialize_as_a_feature_collection (reports.tests.test_serializers.GeoJsonShapeTests.test_many_reports_serialize_as_a_feature_collection) ... ok
+test_nlp_convenience_fields_are_projected (reports.tests.test_serializers.GeoJsonShapeTests.test_nlp_convenience_fields_are_projected) ... ok
+test_scalar_fields_live_under_properties (reports.tests.test_serializers.GeoJsonShapeTests.test_scalar_fields_live_under_properties) ... ok
+test_single_report_serializes_as_a_geojson_feature (reports.tests.test_serializers.GeoJsonShapeTests.test_single_report_serializes_as_a_geojson_feature) ... ok
+test_geometry_is_currently_emitted_as_ewkt (reports.tests.test_serializers.GeometryEncodingDeviationTests.test_geometry_is_currently_emitted_as_ewkt) ... ok
+test_location_is_not_mapped_to_a_geometry_field (reports.tests.test_serializers.GeometryEncodingDeviationTests.test_location_is_not_mapped_to_a_geometry_field) ... ok
+test_rest_framework_gis_is_not_installed (reports.tests.test_serializers.GeometryEncodingDeviationTests.test_rest_framework_gis_is_not_installed) ... ok
+test_the_coordinates_are_still_recoverable_by_clients (reports.tests.test_serializers.GeometryEncodingDeviationTests.test_the_coordinates_are_still_recoverable_by_clients) ... ok
+test_accuracy_at_the_ceiling_is_accepted (reports.tests.test_serializers.GpsAccuracyGateTests.test_accuracy_at_the_ceiling_is_accepted) ... ok
+test_camera_capture_must_declare_its_accuracy (reports.tests.test_serializers.GpsAccuracyGateTests.test_camera_capture_must_declare_its_accuracy) ... ok
+test_camera_capture_with_accuracy_is_valid (reports.tests.test_serializers.GpsAccuracyGateTests.test_camera_capture_with_accuracy_is_valid) ... ok
+test_ceiling_is_configurable (reports.tests.test_serializers.GpsAccuracyGateTests.test_ceiling_is_configurable) ... ok
+test_gnss_grade_accuracy_is_accepted (reports.tests.test_serializers.GpsAccuracyGateTests.test_gnss_grade_accuracy_is_accepted) ... ok
+test_kilometre_scale_accuracy_is_rejected (reports.tests.test_serializers.GpsAccuracyGateTests.test_kilometre_scale_accuracy_is_rejected) ... ok
+test_missing_accuracy_is_allowed_for_non_camera_sources (reports.tests.test_serializers.GpsAccuracyGateTests.test_missing_accuracy_is_allowed_for_non_camera_sources) ... ok
+test_rejection_message_is_in_persian_and_mentions_vpn (reports.tests.test_serializers.GpsAccuracyGateTests.test_rejection_message_is_in_persian_and_mentions_vpn) ... ok
+test_client_cannot_set_is_urgent (reports.tests.test_serializers.ReadOnlyFieldTests.test_client_cannot_set_is_urgent) ... ok
+test_client_cannot_set_nlp_confidence (reports.tests.test_serializers.ReadOnlyFieldTests.test_client_cannot_set_nlp_confidence) ... ok
+test_client_cannot_set_nlp_meta (reports.tests.test_serializers.ReadOnlyFieldTests.test_client_cannot_set_nlp_meta) ... ok
+test_declared_read_only_fields (reports.tests.test_serializers.ReadOnlyFieldTests.test_declared_read_only_fields) ... ok
+test_allowed_transition_passes (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_allowed_transition_passes) ... ok
+test_forbidden_transition_is_rejected (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_forbidden_transition_is_rejected) ... ok
+test_non_staff_bypasses_the_serializer_guard (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_non_staff_bypasses_the_serializer_guard) ... ok
+test_rejection_message_names_both_states (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_rejection_message_names_both_states) ... ok
+test_resolved_is_allowed_when_an_after_image_already_exists (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_resolved_is_allowed_when_an_after_image_already_exists) ... ok
+test_resolved_is_allowed_when_the_after_image_is_supplied (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_resolved_is_allowed_when_the_after_image_is_supplied) ... ok
+test_resolved_requires_an_after_image (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_resolved_requires_an_after_image) ... ok
+test_setting_the_same_status_is_a_no_op (reports.tests.test_serializers.ReportSerializerStatusRuleTests.test_setting_the_same_status_is_a_no_op) ... ok
+test_closed_report_cannot_transition_anywhere (reports.tests.test_serializers.ReportTransitionSerializerTests.test_closed_report_cannot_transition_anywhere) ... ok
+test_full_lifecycle_walk_is_permitted (reports.tests.test_serializers.ReportTransitionSerializerTests.test_full_lifecycle_walk_is_permitted) ... ok
+test_invalid_transition (reports.tests.test_serializers.ReportTransitionSerializerTests.test_invalid_transition) ... ok
+test_raise_exception_surfaces_a_validation_error (reports.tests.test_serializers.ReportTransitionSerializerTests.test_raise_exception_surfaces_a_validation_error) ... ok
+test_resolved_accepts_evidence_in_the_payload (reports.tests.test_serializers.ReportTransitionSerializerTests.test_resolved_accepts_evidence_in_the_payload) ... ok
+test_resolved_requires_evidence (reports.tests.test_serializers.ReportTransitionSerializerTests.test_resolved_requires_evidence) ... ok
+test_same_status_short_circuits_validation (reports.tests.test_serializers.ReportTransitionSerializerTests.test_same_status_short_circuits_validation) ... ok
+test_status_is_required (reports.tests.test_serializers.ReportTransitionSerializerTests.test_status_is_required) ... ok
+test_unknown_status_value_is_rejected (reports.tests.test_serializers.ReportTransitionSerializerTests.test_unknown_status_value_is_rejected) ... ok
+test_valid_transition (reports.tests.test_serializers.ReportTransitionSerializerTests.test_valid_transition) ... ok
+test_a_new_report_cannot_jump_straight_to_resolved (reports.tests.test_serializers.TransitionMapTests.test_a_new_report_cannot_jump_straight_to_resolved) ... ok
+test_closed_is_terminal (reports.tests.test_serializers.TransitionMapTests.test_closed_is_terminal) ... ok
+test_every_status_has_an_entry (reports.tests.test_serializers.TransitionMapTests.test_every_status_has_an_entry) ... ok
+test_every_status_is_reachable_from_submitted (reports.tests.test_serializers.TransitionMapTests.test_every_status_is_reachable_from_submitted) ... ok
+test_every_target_is_a_real_status (reports.tests.test_serializers.TransitionMapTests.test_every_target_is_a_real_status) ... ok
+test_no_status_transitions_to_itself (reports.tests.test_serializers.TransitionMapTests.test_no_status_transitions_to_itself) ... ok
+test_resolved_can_be_reopened_to_in_progress (reports.tests.test_serializers.TransitionMapTests.test_resolved_can_be_reopened_to_in_progress) ... ok
+test_a_token_for_another_report_is_rejected (civic_api.tests.test_websocket.GuestSubscriptionTests.test_a_token_for_another_report_is_rejected) ... ok
+test_a_valid_guest_token_is_accepted (civic_api.tests.test_websocket.GuestSubscriptionTests.test_a_valid_guest_token_is_accepted) ... ok
+test_a_wrong_guest_token_is_rejected_with_4403 (civic_api.tests.test_websocket.GuestSubscriptionTests.test_a_wrong_guest_token_is_rejected_with_4403) ... ok
+test_an_unknown_report_is_rejected_with_4404 (civic_api.tests.test_websocket.GuestSubscriptionTests.test_an_unknown_report_is_rejected_with_4404) ... ok
+test_no_credentials_at_all_is_rejected (civic_api.tests.test_websocket.GuestSubscriptionTests.test_no_credentials_at_all_is_rejected) ... ok
+test_the_server_confirms_the_subscription (civic_api.tests.test_websocket.GuestSubscriptionTests.test_the_server_confirms_the_subscription) ... ok
+test_a_guest_token_still_works_alongside_an_invalid_jwt (civic_api.tests.test_websocket.JwtSubscriptionTests.test_a_guest_token_still_works_alongside_an_invalid_jwt) ... ok
+test_a_malformed_jwt_is_rejected (civic_api.tests.test_websocket.JwtSubscriptionTests.test_a_malformed_jwt_is_rejected) ... ok
+test_another_citizens_jwt_is_rejected (civic_api.tests.test_websocket.JwtSubscriptionTests.test_another_citizens_jwt_is_rejected) ... ok
+test_staff_have_no_implicit_socket_access (civic_api.tests.test_websocket.JwtSubscriptionTests.test_staff_have_no_implicit_socket_access) ... ok
+test_the_owners_jwt_is_accepted (civic_api.tests.test_websocket.JwtSubscriptionTests.test_the_owners_jwt_is_accepted) ... ok
+test_a_disconnected_client_stops_receiving (civic_api.tests.test_websocket.LiveUpdateDeliveryTests.test_a_disconnected_client_stops_receiving) ... ok
+test_a_status_change_is_pushed_to_the_subscriber (civic_api.tests.test_websocket.LiveUpdateDeliveryTests.test_a_status_change_is_pushed_to_the_subscriber) ... ok
+test_the_payload_carries_a_timestamp (civic_api.tests.test_websocket.LiveUpdateDeliveryTests.test_the_payload_carries_a_timestamp) ... ok
+test_the_urgent_flag_is_pushed (civic_api.tests.test_websocket.LiveUpdateDeliveryTests.test_the_urgent_flag_is_pushed) ... ok
+test_two_subscribers_both_receive_the_update (civic_api.tests.test_websocket.LiveUpdateDeliveryTests.test_two_subscribers_both_receive_the_update) ... ok
+test_updates_to_other_reports_are_not_delivered (civic_api.tests.test_websocket.LiveUpdateDeliveryTests.test_updates_to_other_reports_are_not_delivered) ... ok
+test_a_disallowed_origin_is_rejected (civic_api.tests.test_websocket.OriginValidationTests.test_a_disallowed_origin_is_rejected) ... ok
+test_an_allowed_origin_passes_through (civic_api.tests.test_websocket.OriginValidationTests.test_an_allowed_origin_passes_through) ... ok
+test_a_trailing_slash_is_required (civic_api.tests.test_websocket.RoutingTests.test_a_trailing_slash_is_required) ... ok
+test_the_route_pattern_only_accepts_numeric_ids (civic_api.tests.test_websocket.RoutingTests.test_the_route_pattern_only_accepts_numeric_ids) ... ok
+test_a_high_confidence_prediction_passes_the_gate (nlp.tests.test_classifier.ConfidenceGateTests.test_a_high_confidence_prediction_passes_the_gate) ... ok
+test_a_low_confidence_prediction_is_withheld (nlp.tests.test_classifier.ConfidenceGateTests.test_a_low_confidence_prediction_is_withheld) ... ok
+test_a_model_failure_degrades_gracefully (nlp.tests.test_classifier.ConfidenceGateTests.test_a_model_failure_degrades_gracefully) ... [Classifier] Prediction error: pickle corrupt
+Traceback (most recent call last):
+  File "/app/nlp/classifier.py", line 182, in predict_category
+    vectorizer, classifier = _load_or_train()
+                             ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+OSError: pickle corrupt
+ok
+test_the_keyword_baseline_is_not_worse_on_these_cases (nlp.tests.test_classifier.ModelVersusBaselineTests.test_the_keyword_baseline_is_not_worse_on_these_cases) ... ok
+test_the_ml_model_gets_every_held_out_case_right (nlp.tests.test_classifier.ModelVersusBaselineTests.test_the_ml_model_gets_every_held_out_case_right) ... ok
+test_arabic_kaf_becomes_persian_kaf (nlp.tests.test_classifier.PersianNormalisationTests.test_arabic_kaf_becomes_persian_kaf) ... ok
+test_arabic_yeh_becomes_persian_yeh (nlp.tests.test_classifier.PersianNormalisationTests.test_arabic_yeh_becomes_persian_yeh) ... ok
+test_content_words_survive (nlp.tests.test_classifier.PersianNormalisationTests.test_content_words_survive) ... ok
+test_emoji_and_control_characters_are_stripped (nlp.tests.test_classifier.PersianNormalisationTests.test_emoji_and_control_characters_are_stripped) ... ok
+test_empty_input_yields_empty_output (nlp.tests.test_classifier.PersianNormalisationTests.test_empty_input_yields_empty_output) ... ok
+test_normalisation_is_idempotent (nlp.tests.test_classifier.PersianNormalisationTests.test_normalisation_is_idempotent) ... ok
+test_repeated_whitespace_collapses (nlp.tests.test_classifier.PersianNormalisationTests.test_repeated_whitespace_collapses) ... ok
+test_single_character_tokens_are_dropped (nlp.tests.test_classifier.PersianNormalisationTests.test_single_character_tokens_are_dropped) ... ok
+test_stopword_list_is_non_trivial (nlp.tests.test_classifier.PersianNormalisationTests.test_stopword_list_is_non_trivial) ... ok
+test_stopwords_are_dropped (nlp.tests.test_classifier.PersianNormalisationTests.test_stopwords_are_dropped) ... ok
+test_a_withheld_prediction_still_exposes_its_scores (nlp.tests.test_classifier.PredictionQualityTests.test_a_withheld_prediction_still_exposes_its_scores) ... ok
+test_clearly_worded_reports_clear_the_confidence_gate (nlp.tests.test_classifier.PredictionQualityTests.test_clearly_worded_reports_clear_the_confidence_gate) ... ok
+test_terse_or_vague_reports_are_handed_to_the_llm (nlp.tests.test_classifier.PredictionQualityTests.test_terse_or_vague_reports_are_handed_to_the_llm) ... ok
+test_the_returned_label_is_always_the_top_scoring_class (nlp.tests.test_classifier.PredictionQualityTests.test_the_returned_label_is_always_the_top_scoring_class) ... ok
+test_the_top_scoring_class_is_correct_on_held_out_phrasing (nlp.tests.test_classifier.PredictionQualityTests.test_the_top_scoring_class_is_correct_on_held_out_phrasing) ... ok
+test_confidence_is_a_probability (nlp.tests.test_classifier.PredictionShapeTests.test_confidence_is_a_probability) ... ok
+test_empty_text_does_not_crash (nlp.tests.test_classifier.PredictionShapeTests.test_empty_text_does_not_crash) ... ok
+test_the_class_scores_form_a_distribution (nlp.tests.test_classifier.PredictionShapeTests.test_the_class_scores_form_a_distribution) ... ok
+test_the_documented_keys_are_returned (nlp.tests.test_classifier.PredictionShapeTests.test_the_documented_keys_are_returned) ... ok
+test_the_result_is_json_serialisable (nlp.tests.test_classifier.PredictionShapeTests.test_the_result_is_json_serialisable) ... ok
+test_the_source_is_reported_as_sklearn (nlp.tests.test_classifier.PredictionShapeTests.test_the_source_is_reported_as_sklearn) ... ok
+test_a_lighting_report_is_categorised (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_a_lighting_report_is_categorised) ... ok
+test_a_pothole_report_is_categorised (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_a_pothole_report_is_categorised) ... ok
+test_a_rubbish_report_is_categorised (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_a_rubbish_report_is_categorised) ... ok
+test_a_vague_report_asks_for_the_llm (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_a_vague_report_asks_for_the_llm) ... ok
+test_a_water_report_is_categorised (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_a_water_report_is_categorised) ... ok
+test_confidence_never_exceeds_one (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_confidence_never_exceeds_one) ... ok
+test_text_with_no_keywords_returns_nothing (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_text_with_no_keywords_returns_nothing) ... ok
+test_the_keyword_map_is_well_formed (nlp.tests.test_classifier.RuleBasedCategoriserTests.test_the_keyword_map_is_well_formed) ... ok
+test_every_class_has_at_least_a_handful_of_examples (nlp.tests.test_classifier.TrainingDataTests.test_every_class_has_at_least_a_handful_of_examples) ... ok
+test_every_sample_is_a_text_label_pair (nlp.tests.test_classifier.TrainingDataTests.test_every_sample_is_a_text_label_pair) ... ok
+test_the_corpus_is_non_empty (nlp.tests.test_classifier.TrainingDataTests.test_the_corpus_is_non_empty) ... ok
+test_there_are_no_duplicate_samples (nlp.tests.test_classifier.TrainingDataTests.test_there_are_no_duplicate_samples) ... ok
+test_a_clean_text_scores_zero (nlp.tests.test_crisis_keywords.ScoringTests.test_a_clean_text_scores_zero) ... ok
+test_a_single_keyword_scores_its_weight (nlp.tests.test_crisis_keywords.ScoringTests.test_a_single_keyword_scores_its_weight) ... ok
+test_empty_text_scores_zero (nlp.tests.test_crisis_keywords.ScoringTests.test_empty_text_scores_zero) ... ok
+test_every_weight_is_between_one_and_three (nlp.tests.test_crisis_keywords.ScoringTests.test_every_weight_is_between_one_and_three) ... ok
+test_life_threatening_terms_carry_the_top_weight (nlp.tests.test_crisis_keywords.ScoringTests.test_life_threatening_terms_carry_the_top_weight) ... ok
+test_nuisance_terms_carry_the_lowest_weight (nlp.tests.test_crisis_keywords.ScoringTests.test_nuisance_terms_carry_the_lowest_weight) ... ok
+test_scores_accumulate_across_keywords (nlp.tests.test_crisis_keywords.ScoringTests.test_scores_accumulate_across_keywords) ... ok
+test_whitespace_only_text_scores_zero (nlp.tests.test_crisis_keywords.ScoringTests.test_whitespace_only_text_scores_zero) ... ok
+test_a_fire_report_is_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_a_fire_report_is_urgent) ... ok
+test_a_flood_report_is_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_a_flood_report_is_urgent) ... ok
+test_a_gas_leak_is_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_a_gas_leak_is_urgent) ... ok
+test_a_routine_pothole_is_not_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_a_routine_pothole_is_not_urgent) ... ok
+test_a_single_low_weight_word_is_not_enough (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_a_single_low_weight_word_is_not_enough) ... ok
+test_a_thank_you_note_is_not_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_a_thank_you_note_is_not_urgent) ... ok
+test_an_electrocution_hazard_is_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_an_electrocution_hazard_is_urgent) ... ok
+test_an_injury_report_is_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_an_injury_report_is_urgent) ... ok
+test_an_open_manhole_is_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_an_open_manhole_is_urgent) ... ok
+test_empty_text_is_not_urgent (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_empty_text_is_not_urgent) ... ok
+test_spaced_and_zwnj_spellings_are_both_recognised (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_spaced_and_zwnj_spellings_are_both_recognised) ... ok
+test_the_return_shape_is_stable (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_the_return_shape_is_stable) ... ok
+test_threshold_is_three (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_threshold_is_three) ... ok
+test_urgency_survives_a_long_surrounding_narrative (nlp.tests.test_crisis_keywords.UrgencyDecisionTests.test_urgency_survives_a_long_surrounding_narrative) ... ok
+test_a_partial_match_scores_lower_confidence (nlp.tests.test_groq_client.CategoryMappingTests.test_a_partial_match_scores_lower_confidence) ... ok
+test_an_empty_answer_maps_to_no_category (nlp.tests.test_groq_client.CategoryMappingTests.test_an_empty_answer_maps_to_no_category) ... ok
+test_an_exact_match_scores_high_confidence (nlp.tests.test_groq_client.CategoryMappingTests.test_an_exact_match_scores_high_confidence) ... ok
+test_surrounding_whitespace_is_ignored (nlp.tests.test_groq_client.CategoryMappingTests.test_surrounding_whitespace_is_ignored) ... ok
+test_the_catch_all_maps_to_no_category (nlp.tests.test_groq_client.CategoryMappingTests.test_the_catch_all_maps_to_no_category) ... ok
+test_configured_with_a_key (nlp.tests.test_groq_client.ConfigurationTests.test_configured_with_a_key) ... ok
+test_not_configured_without_a_key (nlp.tests.test_groq_client.ConfigurationTests.test_not_configured_without_a_key) ... ok
+test_whitespace_only_key_counts_as_missing (nlp.tests.test_groq_client.ConfigurationTests.test_whitespace_only_key_counts_as_missing) ... ok
+ok
+test_a_hallucinated_category_is_discarded (nlp.tests.test_groq_client.FailureHandlingTests.test_a_hallucinated_category_is_discarded) ... ok
+test_a_missing_sentiment_key_is_tolerated (nlp.tests.test_groq_client.FailureHandlingTests.test_a_missing_sentiment_key_is_tolerated) ... ok
+test_a_network_error_returns_none (nlp.tests.test_groq_client.FailureHandlingTests.test_a_network_error_returns_none) ... [NLP] Groq request failed: <urlopen error no route to host>
+ok
+test_a_timeout_returns_none (nlp.tests.test_groq_client.FailureHandlingTests.test_a_timeout_returns_none) ... [NLP] Groq unexpected error: 
+Traceback (most recent call last):
+  File "/app/nlp/groq_client.py", line 125, in classify_with_groq
+    with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+TimeoutError
+ok
+test_an_http_error_returns_none (nlp.tests.test_groq_client.FailureHandlingTests.test_an_http_error_returns_none) ... [NLP] Groq HTTP error 429: 
+ok
+test_an_unexpected_envelope_returns_none (nlp.tests.test_groq_client.FailureHandlingTests.test_an_unexpected_envelope_returns_none) ... [NLP] Groq response parse error: 'choices'
+ok
+test_non_json_content_returns_none (nlp.tests.test_groq_client.FailureHandlingTests.test_non_json_content_returns_none) ... [NLP] Groq response parse error: Expecting value: line 1 column 1 (char 0)
+ok
+test_case_and_padding_are_tolerated (nlp.tests.test_groq_client.SentimentMappingTests.test_case_and_padding_are_tolerated) ... ok
+test_english_labels_map (nlp.tests.test_groq_client.SentimentMappingTests.test_english_labels_map) ... ok
+test_none_maps_to_nothing (nlp.tests.test_groq_client.SentimentMappingTests.test_none_maps_to_nothing) ... ok
+test_persian_labels_map_too (nlp.tests.test_groq_client.SentimentMappingTests.test_persian_labels_map_too) ... ok
+test_the_mapped_shape_matches_the_lexicon_analyser (nlp.tests.test_groq_client.SentimentMappingTests.test_the_mapped_shape_matches_the_lexicon_analyser) ... ok
+test_unknown_labels_map_to_nothing (nlp.tests.test_groq_client.SentimentMappingTests.test_unknown_labels_map_to_nothing) ... ok
+test_a_browser_like_user_agent_is_sent (nlp.tests.test_groq_client.SuccessfulCallTests.test_a_browser_like_user_agent_is_sent) ... ok
+test_a_well_formed_answer_is_parsed (nlp.tests.test_groq_client.SuccessfulCallTests.test_a_well_formed_answer_is_parsed) ... ok
+test_the_model_is_asked_for_deterministic_json (nlp.tests.test_groq_client.SuccessfulCallTests.test_the_model_is_asked_for_deterministic_json) ... ok
+test_the_model_name_can_be_overridden_by_environment (nlp.tests.test_groq_client.SuccessfulCallTests.test_the_model_name_can_be_overridden_by_environment) ... ok
+test_the_prompt_lists_every_available_category (nlp.tests.test_groq_client.SuccessfulCallTests.test_the_prompt_lists_every_available_category) ... ok
+test_the_request_targets_the_groq_endpoint_with_a_bearer_key (nlp.tests.test_groq_client.SuccessfulCallTests.test_the_request_targets_the_groq_endpoint_with_a_bearer_key) ... ok
+test_a_stronger_complaint_registers_a_higher_intensity (nlp.tests.test_sentiment.IntensifierTests.test_a_stronger_complaint_registers_a_higher_intensity) ... ok
+test_a_strongly_worded_complaint_is_intense (nlp.tests.test_sentiment.IntensifierTests.test_a_strongly_worded_complaint_is_intense) ... ok
+test_an_intensifier_raises_the_intensity (nlp.tests.test_sentiment.IntensifierTests.test_an_intensifier_raises_the_intensity) ... ok
+test_the_intensifier_amplifies_the_dominant_polarity (nlp.tests.test_sentiment.IntensifierTests.test_the_intensifier_amplifies_the_dominant_polarity) ... ok
+test_the_score_measures_polarity_not_magnitude (nlp.tests.test_sentiment.IntensifierTests.test_the_score_measures_polarity_not_magnitude) ... ok
+test_all_weights_are_positive_integers (nlp.tests.test_sentiment.LexiconTests.test_all_weights_are_positive_integers) ... ok
+test_intensifiers_are_non_empty_strings (nlp.tests.test_sentiment.LexiconTests.test_intensifiers_are_non_empty_strings) ... ok
+test_the_lexicons_do_not_overlap (nlp.tests.test_sentiment.LexiconTests.test_the_lexicons_do_not_overlap) ... ok
+test_balanced_positive_and_negative_reads_as_neutral (nlp.tests.test_sentiment.MixedSentimentTests.test_balanced_positive_and_negative_reads_as_neutral) ... ok
+test_neglect_phrases_are_treated_as_strongly_negative (nlp.tests.test_sentiment.MixedSentimentTests.test_neglect_phrases_are_treated_as_strongly_negative) ... ok
+test_the_stronger_side_wins (nlp.tests.test_sentiment.MixedSentimentTests.test_the_stronger_side_wins) ... ok
+test_a_plain_factual_report_is_neutral (nlp.tests.test_sentiment.PolarityTests.test_a_plain_factual_report_is_neutral) ... ok
+test_a_thank_you_is_positive (nlp.tests.test_sentiment.PolarityTests.test_a_thank_you_is_positive) ... ok
+test_an_angry_complaint_is_negative (nlp.tests.test_sentiment.PolarityTests.test_an_angry_complaint_is_negative) ... ok
+test_empty_text_is_neutral_with_a_zero_score (nlp.tests.test_sentiment.PolarityTests.test_empty_text_is_neutral_with_a_zero_score) ... ok
+test_text_with_no_lexicon_hits_is_neutral (nlp.tests.test_sentiment.PolarityTests.test_text_with_no_lexicon_hits_is_neutral) ... ok
+test_all_documented_keys_are_present (nlp.tests.test_sentiment.ScoreShapeTests.test_all_documented_keys_are_present) ... ok
+test_intensity_stays_inside_zero_and_one (nlp.tests.test_sentiment.ScoreShapeTests.test_intensity_stays_inside_zero_and_one) ... ok
+test_the_result_is_json_serialisable (nlp.tests.test_sentiment.ScoreShapeTests.test_the_result_is_json_serialisable) ... ok
+test_the_score_stays_inside_minus_one_and_one (nlp.tests.test_sentiment.ScoreShapeTests.test_the_score_stays_inside_minus_one_and_one) ... ok
+test_a_confident_local_prediction_is_used_directly (nlp.tests.test_service.ClassifierRoutingTests.test_a_confident_local_prediction_is_used_directly) ... ok
+test_a_confident_prediction_never_calls_the_llm (nlp.tests.test_service.ClassifierRoutingTests.test_a_confident_prediction_never_calls_the_llm) ... ok
+test_an_unsure_prediction_does_call_the_llm (nlp.tests.test_service.ClassifierRoutingTests.test_an_unsure_prediction_does_call_the_llm) ... ok
+test_the_full_class_score_distribution_is_retained (nlp.tests.test_service.ClassifierRoutingTests.test_the_full_class_score_distribution_is_retained) ... ok
+ok
+test_a_routine_report_is_not_urgent (nlp.tests.test_service.CrisisIntegrationTests.test_a_routine_report_is_not_urgent) ... ok
+ok
+test_empty_text_never_calls_the_llm (nlp.tests.test_service.EmptyInputTests.test_empty_text_never_calls_the_llm) ... ok
+test_empty_text_reports_the_unknown_source (nlp.tests.test_service.EmptyInputTests.test_empty_text_reports_the_unknown_source) ... ok
+test_empty_text_returns_safe_defaults (nlp.tests.test_service.EmptyInputTests.test_empty_text_returns_safe_defaults) ... ok
+test_whitespace_only_text_returns_safe_defaults (nlp.tests.test_service.EmptyInputTests.test_whitespace_only_text_returns_safe_defaults) ... ok
+test_an_llm_answer_of_none_is_recorded_as_unknown (nlp.tests.test_service.LlmFallbackRoutingTests.test_an_llm_answer_of_none_is_recorded_as_unknown) ... ok
+test_an_unavailable_llm_degrades_to_unknown (nlp.tests.test_service.LlmFallbackRoutingTests.test_an_unavailable_llm_degrades_to_unknown) ... ok
+test_low_confidence_escalates_to_the_llm (nlp.tests.test_service.LlmFallbackRoutingTests.test_low_confidence_escalates_to_the_llm) ... ok
+test_the_local_scores_are_kept_for_comparison (nlp.tests.test_service.LlmFallbackRoutingTests.test_the_local_scores_are_kept_for_comparison) ... ok
+test_without_known_categories_there_is_nothing_to_escalate_to (nlp.tests.test_service.LlmFallbackRoutingTests.test_without_known_categories_there_is_nothing_to_escalate_to) ... ok
+ok
+test_the_confidence_is_rounded_for_storage (nlp.tests.test_service.ResultContractTests.test_the_confidence_is_rounded_for_storage) ... ok
+ok
+ok
+test_the_result_is_an_nlp_result (nlp.tests.test_service.ResultContractTests.test_the_result_is_an_nlp_result) ... ok
+ok
+test_an_llm_call_without_sentiment_keeps_the_lexicon_verdict (nlp.tests.test_service.SentimentRoutingTests.test_an_llm_call_without_sentiment_keeps_the_lexicon_verdict) ... ok
+test_an_llm_sentiment_overrides_the_lexicon (nlp.tests.test_service.SentimentRoutingTests.test_an_llm_sentiment_overrides_the_lexicon) ... ok
+ok
+test_a_batch_is_posted_to_the_expo_endpoint (pushnotify.tests.test_expo.SendingTests.test_a_batch_is_posted_to_the_expo_endpoint) ... ok
+test_a_batch_with_no_valid_tokens_makes_no_request (pushnotify.tests.test_expo.SendingTests.test_a_batch_with_no_valid_tokens_makes_no_request) ... ok
+test_a_malformed_response_returns_no_tickets (pushnotify.tests.test_expo.SendingTests.test_a_malformed_response_returns_no_tickets) ... Expo push unexpected error: Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/app/pushnotify/expo.py", line 50, in send_push_messages
+    parsed = json.loads(resp.read().decode("utf-8"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ok
+test_a_network_failure_returns_no_tickets_instead_of_raising (pushnotify.tests.test_expo.SendingTests.test_a_network_failure_returns_no_tickets_instead_of_raising) ... Expo push request failed: <urlopen error offline>
+ok
+test_a_response_without_a_data_list_returns_no_tickets (pushnotify.tests.test_expo.SendingTests.test_a_response_without_a_data_list_returns_no_tickets) ... ok
+test_an_empty_batch_makes_no_request (pushnotify.tests.test_expo.SendingTests.test_an_empty_batch_makes_no_request) ... ok
+test_an_http_error_returns_no_tickets_instead_of_raising (pushnotify.tests.test_expo.SendingTests.test_an_http_error_returns_no_tickets_instead_of_raising) ... Expo push request failed: HTTP Error 500: boom
+ok
+test_invalid_tokens_are_filtered_out_before_sending (pushnotify.tests.test_expo.SendingTests.test_invalid_tokens_are_filtered_out_before_sending) ... ok
+test_large_batches_are_chunked_at_the_expo_limit (pushnotify.tests.test_expo.SendingTests.test_large_batches_are_chunked_at_the_expo_limit) ... ok
+test_the_body_is_json_with_the_message (pushnotify.tests.test_expo.SendingTests.test_the_body_is_json_with_the_message) ... ok
+test_the_request_declares_json_content (pushnotify.tests.test_expo.SendingTests.test_the_request_declares_json_content) ... ok
+test_tickets_from_every_chunk_are_collected (pushnotify.tests.test_expo.SendingTests.test_tickets_from_every_chunk_are_collected) ... ok
+test_a_token_with_leading_whitespace_is_invalid (pushnotify.tests.test_expo.TokenValidationTests.test_a_token_with_leading_whitespace_is_invalid) ... ok
+test_an_empty_token_is_invalid (pushnotify.tests.test_expo.TokenValidationTests.test_an_empty_token_is_invalid) ... ok
+test_an_expo_push_token_is_valid (pushnotify.tests.test_expo.TokenValidationTests.test_an_expo_push_token_is_valid) ... ok
+test_an_exponent_push_token_is_valid (pushnotify.tests.test_expo.TokenValidationTests.test_an_exponent_push_token_is_valid) ... ok
+test_an_fcm_token_is_not_an_expo_token (pushnotify.tests.test_expo.TokenValidationTests.test_an_fcm_token_is_not_an_expo_token) ... ok
+test_none_is_invalid (pushnotify.tests.test_expo.TokenValidationTests.test_none_is_invalid) ... ok
+test_the_prefix_is_case_sensitive (pushnotify.tests.test_expo.TokenValidationTests.test_the_prefix_is_case_sensitive) ... ok
+----------------------------------------------------------------------
+Ran 510 tests in 40.414s
+OK
+Destroying test database for alias 'default' ('test_urbanhelper_db')...

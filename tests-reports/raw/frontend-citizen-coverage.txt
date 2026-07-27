@@ -1,0 +1,75 @@
+npm notice run frontend-citizen@0.0.0 test:coverage
+npm notice run vitest run --coverage --config vitest.config.js
+
+ RUN  v3.2.7 C:/Users/Dell/Desktop/Amirkabir/Final Project/frontend-citizen
+      Coverage enabled with v8
+
+stderr | src/api/offline.test.js > syncReports — replaying the queue > keeps an item in the queue when the upload fails
+Sync failed for item 1785177824947-1 Error: offline
+    at C:\Users\Dell\Desktop\Amirkabir\Final Project\frontend-citizen\src\api\offline.test.js:220:32
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+    at runSuite (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+stderr | src/api/offline.test.js > syncReports — replaying the queue > a failing item does not block the others
+Sync failed for item 1785177824964-1 Error: offline
+    at C:\Users\Dell\Desktop\Amirkabir\Final Project\frontend-citizen\src\api\offline.test.js:228:36
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+    at runSuite (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+stderr | src/api/offline.test.js > syncReports — replaying the queue > a retry after connectivity returns clears the queue
+Sync failed for item 1785177824968-1 Error: offline
+    at C:\Users\Dell\Desktop\Amirkabir\Final Project\frontend-citizen\src\api\offline.test.js:238:32
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+    at runSuite (file:///C:/Users/Dell/Desktop/Amirkabir/Final%20Project/frontend-citizen/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/hooks/useGeolocation.test.js (20 tests) 200ms
+ ✓ src/api/integrity.test.js (16 tests) 28ms
+ ✓ src/api/offline.test.js (29 tests) 87ms
+ ✓ src/lib/status.test.js (15 tests) 18ms
+ ✓ src/api/interceptors.test.js (15 tests) 55ms
+ ✓ src/api/client.test.js (41 tests) 52ms
+ ✓ src/hooks/useAuth.test.jsx (6 tests) 73ms
+ ✓ src/hooks/useReportSocket.test.js (15 tests) 129ms
+
+ Test Files  8 passed (8)
+      Tests  157 passed (157)
+   Start at  23:13:39
+   Duration  4.99s (transform 408ms, setup 3.24s, collect 2.29s, tests 641ms, environment 22.71s, prepare 2.38s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   97.51 |     94.7 |   86.53 |   97.51 |                   
+ api               |   95.91 |    93.93 |   83.78 |   95.91 |                   
+  client.js        |   92.45 |    92.42 |   93.75 |   92.45 | ...53-156,168-169 
+  integrity.js     |     100 |      100 |     100 |     100 |                   
+  offline.js       |     100 |    96.42 |   73.68 |     100 | 40                
+ hooks             |   99.04 |    95.91 |    92.3 |   99.04 |                   
+  useAuth.js       |     100 |      100 |     100 |     100 |                   
+  ...eolocation.js |     100 |    96.42 |     100 |     100 | 116               
+  ...portSocket.js |   96.55 |    93.75 |   83.33 |   96.55 | 31-32             
+ lib               |     100 |      100 |     100 |     100 |                   
+  status.js        |     100 |      100 |     100 |     100 |                   
+-------------------|---------|----------|---------|---------|-------------------
